@@ -46,6 +46,7 @@ header-includes:
 
 # List of Abbreviations
 \setlength{\parindent}{0em}
+**CRSP**: Center for Research in Security Prices
 **EC**: European Commission  
 **EU**: European Union  
 **IDE**: Integrated Development Environment  
@@ -53,7 +54,7 @@ header-includes:
 **PIE**: Public interest entity  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
 **UK**: United Kingdom   
-**WRDS**: Wharton Research Data Services  
+**WRDS**: Wharton Research Data Services
 
 \setlength{\parindent}{4em} 
 
