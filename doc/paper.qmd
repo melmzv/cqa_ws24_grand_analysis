@@ -1,7 +1,8 @@
 ---
 title: |
-  | Audit market concentration in the EU:
-  | Corporate Decision-Making and Quantitative Analysis - Assignment I\vspace{1cm}
+  | How Much New Information Is There in Earnings?
+  | Corporate Decision-Making and Quantitative Analysis - 
+  | Individual Report\vspace{1cm}
 author:
   - name: Melisa Mazaeva
     email: melisa.mazaeva@student.hu-berlin.de
