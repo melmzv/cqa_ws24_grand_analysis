@@ -2,7 +2,7 @@
 
 ## Adopting the Open Science Workflow and TRR 266 Template for Reproducible Empirical Accounting Research 
 
-This repository provides an infrastructure for an open science-oriented empirical project, specifically targeted at the empirical accounting research community. It features a project exploring audit firms’ market shares in terms of the number of public interest entity (PIE) statutory audits for the year 2021 across EU countries. The project showcases a reproducible workflow integrating Python scripts and data analysis, requiring access to the research platform WRDS, which provides access to a variety of different datasets. This assignment is an empirical replication following open science principles and combining all programming skills and institutional knowledge learned over the CQA course. Through this repository, you will be equipped to evaluate the role of accounting in corporate decision-making while learning to gather, prepare, and analyze relevant data using tools and platforms essential for collaborative and reproducible research.
+This repository provides an infrastructure for an open science-oriented empirical project, specifically targeted at the empirical accounting research community. It features a project exploring audit firms’ market shares in terms of the number of public interest entity (PIE) statutory audits for the year 2021 across EU countries. The project showcases a reproducible workflow integrating Python scripts and data analysis, requiring access to the research platform WRDS, which provides access to a variety of different datasets. This assignment is an empirical replication and paper extension that follows open science principles, integrating programming skills and institutional knowledge gained throughout the CQA course. Through this repository, you will be equipped to evaluate the role of accounting in corporate decision-making while learning to gather, prepare, and analyze relevant data using tools and platforms essential for collaborative and reproducible research.
 
 The task involves accessing and retrieving data from the Audit Analytics Database through WRDS, which adds complexity as it requires both understanding WRDS dataset structure and writing scripts to pull the data. Reproducing a table from a seminal paper necessitates a deep understanding of the paper’s methodology and thorough attention to detail to match the results. Additionally, the project output includes  documentation of the steps and explicit assumptions made. The paper (and presentation) output files present the findings, compare them with the paper key results and discuss any differences observed.
 
@@ -47,6 +47,9 @@ Next, explore the repository to familiarize yourself with its folders and files 
 
 > [!TIP] 
 > Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name `Toggle Locked Scrolling Across Editors`. It is very useful if you are aligning the config file with the according python file, for example. :woman_technologist:
+
+> [!TIP] 
+> Here is a new tip for [references.bib](doc/references.bib) file! If you're working with multiple citation formats, consider setting up Zotero's Quick Copy feature to directly copy BibTeX-formatted references into the `bib`file. This can save time and ensure consistency in your bibliography. More about the Quick Copy feature  find :point_right: [here](https://www.zotero.org/support/creating_bibliographies#quick_copy).
 
 You also see an `output` directory but it is empty. Why? Because the output paper and presentation are created locally on your computer.
 

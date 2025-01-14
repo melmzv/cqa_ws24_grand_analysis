@@ -165,7 +165,7 @@ This assignment is an exact replication of the report by @EC_Report_2024, where 
 
 The analysis reveals significant variation in market concentration across countries, with the Big 4 accounting for over 80% of market share in 11 countries, while others show a more decentralized landscape where non-Big 4 firms contribute substantially. These findings align closely with the original study results, confirming the reliability of the data and methodologies used in this replication. However, discrepancies in specific countries, such as Romania, highlight the importance of transparent methodologies and consistent definitions when conducting such analyses.
 
-This assignment required a comprehensive application of skills learned throughout the course, incorporating data analysis, replication techniques, and visualization. In the future, this repository can be cloned or forked (if made public) to kickstart further projects on earnings management measures analysis. Thanks for reading!
+This assignment required a comprehensive application of programming skills and institutional knowledge gained throughout the course, integrating data analysis, replication, and visualization techniques in line with open science principles. In the future, this repository can be cloned or forked (if made public) to kickstart further projects on earnings management measures analysis. Thanks for reading!
 
 
 \pagebreak
