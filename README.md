@@ -32,7 +32,7 @@ You start by setting up few tools on your system:
 
 - `code`: This directory holds program scripts that are being called to pull data from WRDS directly using python, prepare the data, run the analysis and create the output files (a replicated (pickle) output). Using pickle instead of Excel is more preferable as it is a more Pythonic data format, enabling faster read and write operations, preserving data types more accurately, and providing better compatibility with Python data structures and libraries. 
 ![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*eFuMBvt4HtOK1YFb-SQ2KA.png)
-*<small>The picture showcases the process of serializing Python objects into a binary format (pickling) for storage in a file and deserializing them back into Python objects (unpickling) for reuse in analysis or other workflows.</small>*
+*<small>The picture showcases the process of serializing Python objects into a binary format (pickling) for storage in a file and deserializing them back into Python objects (unpickling) for reuse in analysis or other workflows.<small>*
 
 
 - `data`: A directory where data is stored. It is used to organize and manage all data files involved in the project, ensuring a clear separation between external, pulled, and generated data sources. Go through the sub-directories and a README file that explains their purpose. 
