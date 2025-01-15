@@ -49,7 +49,9 @@ You start by setting up few tools on your system:
 > - Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name `Toggle Locked Scrolling Across Editors`. It is very useful if you are aligning the config file with the according python file, for example. :woman_technologist:
 > - Here is a new tip for [references.bib](doc/references.bib) file! If you're working with multiple citation formats, consider setting up Zotero's Quick Copy feature to directly copy BibTeX-formatted references into the `bib` file. This can save time and ensure consistency in your bibliography. Find more about the Quick Copy feature :point_right: [here](https://www.zotero.org/support/creating_bibliographies#quick_copy).
 
-![ ](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc29pdm0wcmJxN2I0MTdwNHdmNm9xZnNlZ2w1MGt5cHE4OXM1anR4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/78XCFBGOlS6keY1Bil/giphy.gif)
+<p align="center">
+  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc29pdm0wcmJxN2I0MTdwNHdmNm9xZnNlZ2w1MGt5cHE4OXM1anR4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/78XCFBGOlS6keY1Bil/giphy.gif" alt="Centered GIF"/>
+</p>
 
 You also see an `output` directory but it is empty. Why? Because the output paper (and presentation) are created locally on your computer.
 
