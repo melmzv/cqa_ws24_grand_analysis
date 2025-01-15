@@ -61,9 +61,9 @@ You also see an `output` directory but it is empty. Why? Because the output pape
 Assuming that you have WRDS access, Python, Vs Code, Quarto and make installed, this should be relatively straightforward. Refer to the setup instructions in section [above](#where-do-i-start).
 
 > [!IMPORTANT]
-> - To access the Transparency Report data needed for this project, use the Audit Analytics Database available through the WRDS (Wharton Research Data Services) platform. WRDS acts as a gateway, offering tools for data extraction and analysis, and consolidates multiple data sources for academic and corporate research.
-> - In order to access the Audit Analytics Database through WRDS, complete this [form](https://wrds-www.wharton.upenn.edu/register/), if not yet registered for WRDS. Ensure that you create an account with your institutional (university) login. If you are from Humboldt-Universität zu Berlin, contact the University Library to get your account request approved. After setting up Two-factor authentication (2FA) and accepting the terms of use, you will be set to go with WRDS Databases.
-> - Unfortunately, WRDS does not typically provide direct access to historical snapshots of databases. The data available through WRDS is usually the most current version (latest update in [September 2024](https://wrds-www.wharton.upenn.edu/pages/get-data/audit-analytics/europe/europe-transparency-reports/)). To access a specific historical version like the 2022 version, contact the data vendor through [WRDS support](mailto:wrds@lseg.com?subject=[GitHub]%20Historical%20Data%20Access) directly to inquire about the possibility of accessing historical snapshots.
+> - To access the data needed for this project, use the Databases available through the WRDS (Wharton Research Data Services) platform. WRDS acts as a gateway, offering tools for data extraction and analysis, and consolidates multiple data sources for academic and corporate research.
+> - In order to access a Database through WRDS, complete this [form](https://wrds-www.wharton.upenn.edu/register/), if not yet registered for WRDS. Ensure that you create an account with your institutional (university) login. If you are from Humboldt-Universität zu Berlin, contact the University Library to get your account request approved. After setting up Two-factor authentication (2FA) and accepting the terms of use, you will be set to go with WRDS Databases.
+> - Please note that WRDS does not typically provide direct access to historical snapshots of databases. The data available through WRDS is usually the most current version. To access a specific historical version, contact the data vendor through [WRDS support](mailto:wrds@lseg.com?subject=[GitHub]%20Historical%20Data%20Access) directly to inquire about the possibility of accessing historical snapshots.
 
 
 1. Click on the `Use this template` button on the top right of the repository and choose `Create a new repository`. Give the repository a name, a description and choose whether it should be public or private. Click on `Create repository`.
@@ -101,19 +101,20 @@ quarto render doc/presentation.qmd
 mv doc/presentation.pdf output
 rm -f doc/presentation.ttt doc/presentation.fff
 ```
-7. Eventually, you will be greeted with the two files in the `output` directory: "paper.pdf" (and "presentation.pdf"). You have successfully used an open science resource and reproduced the analysis. Congratulations! 🥳
+7. Eventually, you will be greeted with the two files in the `output` directory: "paper.pdf" (and "presentation.pdf"). You have successfully used an open science resource and reproduced the analysis. Congratulations! :rocket:
 
 ### Setting up for Reproducible Empirical Research
 
 This code base, adapted from TREAT, should give you an overview on how the template is supposed to be used for my specific project and how to structure a reproducible empirical project.
-To start a new reproducible project on audit firms’ market shares for PIE statutory audits based on this repo, follow these steps: 
+To start a new reproducible project on the informativeness of quarterly earnings announcements and their impact on share price movements based on this repository, follow these steps: 
 1. Clone the repository by clicking “Use this Template” at the top of the file list on GitHub. 
 2. Remove any files that you don’t need for your specific project. 
 3. Over time, you can fork this repository and customize it to develop a personalized template that fits your workflow and preferences.
 
 > [!TIP]
-> In case you need to work with additional variables other than stated in this project, I recommend using the [Manuals and Overviews - Excel Dictionaries](https://wrds-www.wharton.upenn.edu/pages/get-data/audit-analytics/europe/europe-transparency-reports/) that are helpful for users interested in viewing the data structures and definitions as presented by Audit Analytics.
-
+> For additional guidance on concepts and data handling relevant to this project, please use these useful sources:
+> - [Empirical Research in Accounting: Tools and Methods](https://iangow.github.io/far_book/identifiers.html), which focuses on providing foundational skills for accounting research, including research design, causal inference, and data analysis, with an emphasis on the use of WRDS data.
+> - [CRSP US Stock & Index Databases - Data Descriptions Guide](https://www.crsp.org/wp-content/uploads/guides/CRSP_US_Stock_&_Indexes_Database_Data_Descriptions_Guide.pdf), a comprehensive reference for understanding the CRSP database structure and data definitions.
 
 ### Licensing
 
