@@ -2,52 +2,52 @@
 
 ## Adopting the Open Science Workflow and TRR 266 Template for Reproducible Empirical Accounting Research 
 
-This repository provides an infrastructure for an open science-oriented empirical project, specifically targeted at the empirical accounting research community. It features a project exploring the informativeness of quarterly earnings announcements and their contribution to annual share price movements using an event-study methodology. The project showcases a reproducible workflow integrating Python scripts and data analysis, requiring access to the research platform WRDS, which provides access to a variety of different datasets. Assignment III is an empirical replication and paper extension that follows open science principles, integrating programming skills and institutional knowledge gained throughout the CQA (Corporate Decision-Making and Quantitative Analysis) course. This repository equips you to explore the role of accounting in corporate practices while developing skills to gather, prepare, and analyze relevant data using tools and platforms essential for collaborative and reproducible research.
+This repository provides an infrastructure for an open science-oriented empirical project, specifically targeted at the empirical accounting research community. It features a project exploring the informativeness of quarterly earnings announcements and their contribution to annual share price movements using an event-study methodology. The project showcases a reproducible workflow integrating Python scripts and data analysis, requiring access to the research platform WRDS, which provides access to a variety of datasets. Assignment III is an empirical replication and paper extension that follows open science principles, integrating programming skills and institutional knowledge gained throughout the CQA (Corporate Decision-Making and Quantitative Analysis) course. This repository equips users to explore the role of accounting in corporate practices while developing skills to gather, prepare, and analyze relevant data using tools and platforms essential for collaborative and reproducible research.
 
-The task involves accessing and retrieving data from multiple databases through WRDS, including CRSP and Compustat, as well as Worldscope and Datastream from Thomson/Refinitiv. The use of multiple databases adds an additional layer of complexity, requiring not only a solid understanding of their individual structures but also the ability to integrate data from diverse sources. This process demands careful scripting and thorough attention to detail to ensure the accurate extraction and alignment of relevant data for analysis. Reproducing tables and figures from a seminal paper necessitates a deep understanding of the paper’s methodology and thorough attention to detail to match the results. Additionally, the project output includes documentation of the steps and explicit assumptions made. The paper (and presentation) output files present the findings, compare them with the paper key results and discuss any differences observed.
+The task involves accessing and retrieving data from multiple databases through WRDS, including CRSP and Compustat, as well as Worldscope and Datastream from Thomson/Refinitiv. The use of multiple databases adds an additional layer of complexity, requiring not only a solid understanding of their individual structures but also the ability to integrate data from diverse sources. Reproducing tables and figures from a seminal paper necessitates a deep understanding of the paper’s methodology and meticulous attention to detail to match the results. Additionally, the project output includes documentation of the steps taken and explicit assumptions made. The paper (and presentation) output files present the findings, compare them with the key results from the paper, and discuss any observed differences.
 
-Even if analyzing the informativeness of quarterly earnings announcements isn’t your usual area of interest (though why wouldn’t it be? :thinking:) or do not have access to WRDS Databases, the codebase provided in this repository will give you a clear understanding of how to structure a reproducible empirical project. The template and workflow used here are designed to ensure transparency and reproducibility, making it a valuable resource for any empirical accounting research project.
+Even if analyzing the informativeness of quarterly earnings announcements isn’t your usual area of interest (though why wouldn’t it be? :thinking:) or you do not have access to WRDS Databases, the codebase provided in this repository will give you a clear understanding of how to structure a reproducible empirical project. The template and workflow used here are designed to ensure transparency and reproducibility, making it a valuable resource for any empirical accounting research project.
 
 The default branch, `only_python`, is a stripped-down version of the template containing only the Python workflow. This branch was cloned from the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) repository, focusing solely on the Python workflow and utulizing the Python libraries listed in the `requirements.txt` file.
 
 ### Where do I start?
 
-You start by setting up few tools on your system: 
+You start by setting up a few tools on your system: 
 
 - If you are new to Python, follow the [Real Python installation guide](https://realpython.com/installing-python/) that gives a good overview of how to set up Python on your system.
 
-- Additionally, you will also need to setup an Integrated Development Environment (IDE) or a code editor. We recommend using VS Code, please follow the [Getting started with Python in VS Code Guide](https://code.visualstudio.com/docs/python/python-tutorial).
+- Additionally, you will need to set up an Integrated Development Environment (IDE) or a code editor. We recommend using VS Code; please follow the [Getting started with Python in VS Code Guide](https://code.visualstudio.com/docs/python/python-tutorial).
 
-- You wll also need [Quarto](https://quarto.org/), a scientific and technical publishing system used for documentation purposes of this project. Please follow the [Quarto installation guide](https://quarto.org/docs/get-started/) to install Quarto on your system. I recommend downloading the Quarto [Extension](https://marketplace.visualstudio.com/items?itemName=quarto.quarto) for enhanced functionality, which streamlines the workflow and ensures professional documentation quality for this project.
+- You wll also need [Quarto](https://quarto.org/), a scientific and technical publishing system used for used for documenting this project. Please follow the [Quarto installation guide](https://quarto.org/docs/get-started/) to install Quarto on your system. I recommend downloading the Quarto [Extension](https://marketplace.visualstudio.com/items?itemName=quarto.quarto) for enhanced functionality, which streamlines the workflow and ensures professional documentation quality for this project.
 
 - Finally, you will also need to have `make` installed on your system, if you want to use it. It reads instructions from a `Makefile` and helps automate the execution of these tasks, ensuring that complex workflows are executed correctly and efficiently.
     - For Linux users this is usually already installed. 
     - For MacOS users, you can install `make` by running `brew install make` in the terminal. 
-    - For Windows users, there are few options to install `make` and they are dependent on how you have setup your system. For example, if you have installed the Windows Subsystem for Linux (WSL), you can install `make` by running `sudo apt-get install make` in the terminal. If not you are probably better of googling how to install `make` on Windows and follow a reliable source.
+    - For Windows users, there are few options to install `make` and they are dependent on how you have setup your system. For example, if you have installed the Windows Subsystem for Linux (WSL), you can install `make` by running `sudo apt-get install make` in the terminal. If not, you are probably better off googling how to install `make` on Windows and follow a reliable source.
 
 
-:open_file_folder: Next, explore the repository to familiarize yourself with its folders and files in them:
+:open_file_folder: Next, explore the repository to familiarize yourself with its folders and their contents:
 
-- `config`: This directory holds configuration files that are being called by the program scripts in the `code` directory. We try to keep the configurations separate from the code to make it easier to adjust the workflow to your needs. In this project, `pull_data_cfg.yaml` file outlines the variables and settings needed to extract the necessary data from the WRDS databases. The `prepare_data_cfg.yaml` file specifies the configurations for preprocessing and cleaning the data before analysis, ensuring consistency and accuracy in the dataset and following the paper filtration requirements. The `do_analysis_cfg.yaml` file contains the parameters and settings used for performing the final analysis on the extracted earnings data.
+- `config`: This directory holds configuration files that are being called by the program scripts in the `code` directory. We try to keep the configurations separate from the code to make it easier to adjust the workflow to your needs. In this project, `pull_data_cfg.yaml` file outlines the variables and settings needed to extract the necessary data from the WRDS databases. The `prepare_data_cfg.yaml` file specifies the configurations for preprocessing and cleaning the data before analysis, ensuring consistency and accuracy in the dataset and following the paper filtration requirements. The `do_analysis_cfg.yaml` file contains parameters and settings for performing the final analysis on the extracted earnings data.
 
-- `code`: This directory holds program scripts that are being called to pull data from WRDS directly using python, prepare the data, run the analysis and create the output files (a replicated (pickle) output). Using pickle instead of Excel is more preferable as it is a more Pythonic data format, enabling faster read and write operations, preserving data types more accurately, and providing better compatibility with Python data structures and libraries. 
+- `code`: This directory holds program scripts used to pull data from WRDS directly using python, prepare the data, run the analysis and create the output files (a replicated (pickle) output). Using pickle instead of Excel is more preferable as it is a more Pythonic data format, enabling faster read and write operations, preserving data types more accurately, and providing better compatibility with Python data structures and libraries. 
 ![image](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*eFuMBvt4HtOK1YFb-SQ2KA.png)
-*The picture showcases the process of serializing Python objects into a binary format (pickling) for storage in a file and deserializing them back into Python objects (unpickling) for reuse in analysis or other workflows.*
+*The picture illustrates the process of serializing Python objects into a binary format (pickling) for storage in a file and deserializing them back into Python objects (unpickling) for reuse in analysis or other workflows.*
 
-- `data`: A directory where data is stored. It is used to organize and manage all data files involved in the project, ensuring a clear separation between external, pulled, and generated data sources. Go through the sub-directories and a README file that explains their purpose. 
+- `data`: A directory where data is stored. It is used to organize and manage all data files involved in the project, ensuring clear separation between external, pulled, and generated data. Go through the sub-directories and a README file that explains their purpose. 
 
-- `doc`: This directory contains Quarto files (.qmd) that include text and program instructions for the paper and presentation (<ins> not </ins>  rendered in this project due to task instruction - however, feel free to use the presentation template and adjust it to your needs). These files are rendered through the Quarto process using Python and the VS Code extension, integrating code, results, and literal text seamlessly.
+- `doc`: This directory contains Quarto files (.qmd) that include text and program instructions for the paper and presentation (<ins> not </ins>  rendered in this project due to task instructions - however, feel free to use the presentation template and adjust it to your needs). These files are rendered through the Quarto process using Python and the VS Code extension, integrating code, results, and literal text seamlessly.
 
 > [!IMPORTANT]
 > Make use of significantly enhanced LaTeX table formatting for refined and customizable paper output! 
 
 > [!WARNING]
-> While generating the presentation, you may notice that some sections and subsections might not have the correct beamer formatting applied. This is due to the color coding in the `beamer_theme_trr266.sty` file, which might need further adjustments. The current output is based on the template provided and further customization may be required to ensure consistency across all slides.
+> While generating the presentation, you may notice that some sections and subsections might not have the correct beamer formatting applied. This occurs due to the color coding in the `beamer_theme_trr266.sty` file, which may require further adjustments. The current output, based on the provided template, may require further customization to ensure consistency across all slides.
 
 > [!TIP]
 > - Download the [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=axelrindle.duplicate-file) for duplicating files. This will streamline your workflow by allowing you to duplicate files directly within Visual Studio Code, rather than manually copying and pasting in Finder (Mac) or File Explorer (Windows). :wink:
-> - Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name `Toggle Locked Scrolling Across Editors`. It is very useful if you are aligning the config file with the according python file, for example. :woman_technologist:
-> - Here is a new tip for [references.bib](doc/references.bib) file! If you're working with multiple citation formats, consider setting up Zotero's Quick Copy feature to directly copy BibTeX-formatted references into the `bib` file. This can save time and ensure consistency in your bibliography. Find more about the Quick Copy feature :point_right: [here](https://www.zotero.org/support/creating_bibliographies#quick_copy).
+> - Another fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To enable it, type in the Command Palette the action name `Toggle Locked Scrolling Across Editors`. This is particularly useful when aligning the config file with the corresponding Python file, for example. :woman_technologist:
+> - Here is a new tip for [references.bib](doc/references.bib) file! If you're working with multiple citation formats, consider setting up Zotero's Quick Copy feature to directly copy BibTeX-formatted references into the `bib` file. This can save time and ensure consistency in your bibliography. Learn more about the Quick Copy feature :point_right: [here](https://www.zotero.org/support/creating_bibliographies#quick_copy).
 
 <p align="center">
   <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc29pdm0wcmJxN2I0MTdwNHdmNm9xZnNlZ2w1MGt5cHE4OXM1anR4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/78XCFBGOlS6keY1Bil/giphy.gif" alt="Centered GIF"/>
@@ -58,29 +58,31 @@ You also see an `output` directory but it is empty. Why? Because the output pape
 
 ### How do I create the output?
 
-Assuming that you have WRDS access, Python, Vs Code, Quarto and make installed, this should be relatively straightforward. Refer to the setup instructions in section [above](#where-do-i-start).
+Assuming that you have WRDS access, Python, VS Code, Quarto, and `make` installed, this should be relatively straightforward. Refer to the setup instructions in the section [above](#where-do-i-start).
 
 > [!IMPORTANT]
-> - To access the data needed for this project, use the Databases available through the WRDS (Wharton Research Data Services) platform. WRDS acts as a gateway, offering tools for data extraction and analysis, and consolidates multiple data sources for academic and corporate research.
-> - In order to access a Database through WRDS, complete this [form](https://wrds-www.wharton.upenn.edu/register/), if not yet registered for WRDS. Ensure that you create an account with your institutional (university) login. If you are from Humboldt-Universität zu Berlin, contact the University Library to get your account request approved. After setting up Two-factor authentication (2FA) and accepting the terms of use, you will be set to go with WRDS Databases.
-> - Please note that WRDS does not typically provide direct access to historical snapshots of databases. The data available through WRDS is usually the most current version. To access a specific historical version, contact the data vendor through [WRDS support](mailto:wrds@lseg.com?subject=[GitHub]%20Historical%20Data%20Access) directly to inquire about the possibility of accessing historical snapshots.
+> - To access the data needed for this project, use the databases available through the WRDS (Wharton Research Data Services) platform. WRDS acts as a gateway, offering tools for data extraction and analysis, consolidating multiple data sources for academic and corporate research.
+> - To access a database through WRDS, complete this [form](https://wrds-www.wharton.upenn.edu/register/) if you are not yet registered. Ensure that you create an account with your institutional (university) email. If you are from Humboldt-Universität zu Berlin, contact the University Library to get your account request approved. After setting up two-factor authentication (2FA) and accepting the terms of use, you will be ready to access WRDS databases.
+> - Please note that WRDS does not typically provide direct access to historical snapshots of databases. The data available through WRDS is usually the most current version. To access a specific historical version, contact the data vendor directly through [WRDS support](mailto:wrds@lseg.com?subject=[GitHub]%20Historical%20Data%20Access) to inquire about the possibility of accessing historical snapshots.
 
 
-1. Click on the `Use this template` button on the top right of the repository and choose `Create a new repository`. Give the repository a name, a description and choose whether it should be public or private. Click on `Create repository`.
-2. You can now clone the repository to your local machine. Open the repository in Vs Code and open a new terminal.
+1. Click on the `Use this template` button on the top right of the repository and choose `Create a new repository`. Provide the repository with a name, a description, and select whether it should be public or private. Then click `Create repository`.
+2. Clone the repository to your local machine. Open the repository in VS Code and launch a new terminal.
 3. It is advisable to create a virtual environment for the project:
 
 ```shell
-python3 -m venv venv # You can do this by running the command in the terminal
-# This will create a virtual environment in the `venv` directory.
-source venv/bin/activate # Activate the virtual environment by running this on Linux and Mac OS
-# venv\Scripts\activate.bat # If you are using Windows - command prompt
-# venv/Script/Activate.ps1 # If you are using Windows - PowerShell and have allowed script execution
+python3 -m venv venv # Run this command in the terminal to create a virtual environment in the `venv` directory.
+source venv/bin/activate # Activate the virtual environment on Linux or macOS.
+# venv\Scripts\activate.bat # If you are using Windows Command Prompt.
+# venv/Script/Activate.ps1 # If you are using Windows PowerShell and have allowed script execution.
 ```
 You can deactivate the virtual environment by running `deactivate`.
 
 4. With an active virtual environment, you can install the required packages by running `pip install -r requirements.txt` in the terminal. This will install the required packages for the project in the virtual environment.
 5. Copy the file _secrets.env to secrets.env in the project main directory. Edit it by adding your WRDS credentials.
+
+> [!CAUTION]
+> Ensure your WRDS credentials are stored securely in `secrets.env`. Sharing this file or exposing its contents could compromise access to sensitive data.
 
 > [!NOTE]
 > Note that inability to see the password while typing is standard behavior for security reasons. When prompted, type your password even though it won’t be displayed and press Enter. When WRDS prompts you to create a .pgpass file, it’s asking if you want to store your login credentials for easier future access. Answer ‘y’ to create the file now and follow the instructions, or ‘n’ if you prefer to enter your password each time or create the file manually later.
