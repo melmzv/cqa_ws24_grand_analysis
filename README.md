@@ -26,7 +26,7 @@ You start by setting up few tools on your system:
     - For Windows users, there are few options to install `make` and they are dependent on how you have setup your system. For example, if you have installed the Windows Subsystem for Linux (WSL), you can install `make` by running `sudo apt-get install make` in the terminal. If not you are probably better of googling how to install `make` on Windows and follow a reliable source.
 
 
-Next, explore the repository to familiarize yourself with its folders and files in them:
+:open_file_folder: Next, explore the repository to familiarize yourself with its folders and files in them:
 
 - `config`:open_file_folder: : This directory holds configuration files that are being called by the program scripts in the `code` directory. We try to keep the configurations separate from the code to make it easier to adjust the workflow to your needs. In this project, `pull_data_cfg.yaml` file outlines the variables and settings needed to extract the necessary Transparency Report data from the Audit Analytics database. The `prepare_data_cfg.yaml` file specifies the configurations for preprocessing and cleaning the data before analysis, ensuring consistency and accuracy in the dataset and following the paper filtration requirements. The `do_analysis_cfg.yaml` file contains the parameters and settings used for performing the final analysis on the extracted financial data.
 
