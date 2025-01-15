@@ -36,7 +36,7 @@ You start by setting up few tools on your system:
 
 - `data`: A directory where data is stored. It is used to organize and manage all data files involved in the project, ensuring a clear separation between external, pulled, and generated data sources. Go through the sub-directories and a README file that explains their purpose. 
 
-- `doc`: This directory contains Quarto files (.qmd) that include text and program instructions for the paper and presentation (<ins> not </ins> rendered in this project due to task instruction - however, feel free to use the presentation template and adjust it to your needs). These files are rendered through the Quarto process using Python and the VS Code extension, integrating code, results, and literal text seamlessly.
+- `doc`: This directory contains Quarto files (.qmd) that include text and program instructions for the paper and presentation (<ins> not </ins>  rendered in this project due to task instruction - however, feel free to use the presentation template and adjust it to your needs). These files are rendered through the Quarto process using Python and the VS Code extension, integrating code, results, and literal text seamlessly.
 
 > [!IMPORTANT]
 > Make use of significantly enhanced LaTeX table formatting for refined and customizable paper output! 
@@ -45,17 +45,13 @@ You start by setting up few tools on your system:
 > While generating the presentation, you may notice that some sections and subsections might not have the correct beamer formatting applied. This is due to the color coding in the `beamer_theme_trr266.sty` file, which might need further adjustments. The current output is based on the template provided and further customization may be required to ensure consistency across all slides.
 
 > [!TIP]
-> Download the [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=axelrindle.duplicate-file) for duplicating files. This will streamline your workflow by allowing you to duplicate files directly within Visual Studio Code, rather than manually copying and pasting in Finder (Mac) or File Explorer (Windows). :wink:
-
-> [!TIP] 
-> Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name `Toggle Locked Scrolling Across Editors`. It is very useful if you are aligning the config file with the according python file, for example. :woman_technologist:
-
-> [!TIP] 
-> Here is a new tip for [references.bib](doc/references.bib) file! If you're working with multiple citation formats, consider setting up Zotero's Quick Copy feature to directly copy BibTeX-formatted references into the `bib` file. This can save time and ensure consistency in your bibliography. Find more about the Quick Copy feature :point_right: [here](https://www.zotero.org/support/creating_bibliographies#quick_copy).
+> - Download the [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=axelrindle.duplicate-file) for duplicating files. This will streamline your workflow by allowing you to duplicate files directly within Visual Studio Code, rather than manually copying and pasting in Finder (Mac) or File Explorer (Windows). :wink:
+> - Another quite fresh tip to synchronise vertical or horizontal scrolling in splitted view in VS Code. To engage it, type in the Command Palette the action name `Toggle Locked Scrolling Across Editors`. It is very useful if you are aligning the config file with the according python file, for example. :woman_technologist:
+> - Here is a new tip for [references.bib](doc/references.bib) file! If you're working with multiple citation formats, consider setting up Zotero's Quick Copy feature to directly copy BibTeX-formatted references into the `bib` file. This can save time and ensure consistency in your bibliography. Find more about the Quick Copy feature :point_right: [here](https://www.zotero.org/support/creating_bibliographies#quick_copy).
 
 ![ ](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc29pdm0wcmJxN2I0MTdwNHdmNm9xZnNlZ2w1MGt5cHE4OXM1anR4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/78XCFBGOlS6keY1Bil/giphy.gif)
 
-You also see an `output` directory but it is empty. Why? Because the output paper and presentation are created locally on your computer.
+You also see an `output` directory but it is empty. Why? Because the output paper (and presentation) are created locally on your computer.
 
 
 ### How do I create the output?
