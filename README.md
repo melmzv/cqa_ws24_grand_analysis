@@ -12,6 +12,9 @@ The default branch, `only_python`, is a stripped-down version of the template co
 
 ### Where do I start?
 
+> *"Talk is cheap. Show me the code."*  
+> — **Linus Torvalds**
+
 You start by setting up a few tools on your system: 
 
 - If you are new to Python, follow the [Real Python installation guide](https://realpython.com/installing-python/) that gives a good overview of how to set up Python on your system.
