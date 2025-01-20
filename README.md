@@ -111,6 +111,9 @@ rm -f doc/presentation.ttt doc/presentation.fff
 ### Setting up for Reproducible Empirical Research
 
 This code base, adapted from TREAT, should give you an overview on how the template is supposed to be used for my specific project and how to structure a reproducible empirical project.
+
+> **📌 Note:** This repository does not contain any **pull requests** because it is an individual project without ongoing code reviews or feature-based branching workflows. However, it includes a **release**, allowing future collaborative research to build upon this work. 
+
 To start a new reproducible project on the informativeness of quarterly earnings announcements and their impact on share price movements based on this repository, follow these steps: 
 1. Clone the repository by clicking “Use this Template” at the top of the file list on GitHub. 
 2. Remove any files that you don’t need for your specific project. 
