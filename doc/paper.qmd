@@ -23,6 +23,8 @@ format:
     documentclass: article
     number-sections: true
     toc: true
+    lof: true  # Enables List of Figures
+    lot: true  # Enables List of Tables
 fig_caption: yes
 fontsize: 11pt
 ident: yes
@@ -54,8 +56,6 @@ header-includes:
 **EC**: European Commission  
 **EU**: European Union  
 **IDE**: Integrated Development Environment  
-**NCA**: National Competent Authority  
-**PIE**: Public interest entity  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
 **UK**: United Kingdom   
 **WRDS**: Wharton Research Data Services
