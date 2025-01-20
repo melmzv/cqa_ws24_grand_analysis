@@ -9,7 +9,7 @@ author:
     affiliations:
       - Humboldt-Universität zu Berlin  
 date: today
-date-format: MMM D, YYYY [\vspace{1cm}]
+date-format: MMM D, YYYY [\vspace{0cm}] # Adjust the vertical space after the date from 1cm
 abstract: |
   | This project uses the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) to provide infrastructure for open science-oriented empirical projects. Leveraging data from the CRSP and Compustat databases via WRDS, alongside Worldscope and Datastream via Thomson/Refinitiv, this repository showcases a reproducible workflow integrating Python scripts for data preparation, analysis, and visualization. Integrating multiple databases adds complexity, requiring a detailed understanding of their structures and careful scripting to extract, align, and analyze data effectively. The project replicates and extends Ball and Shivakumar (2008) to analyze the informativeness of quarterly earnings announcements and their contribution to annual share price movements, highlighting their critical role in investment decisions and impact on investors, analysts, and policymakers. Key tasks include replicating and comparing original results, extending the analysis to 2007–2023, and applying the methodology to a non-U.S. country. The project also documents research design choices, discusses variations between original and reproduced results, and provides insights into earnings informativeness across different timeframes and jurisdictions. Additionally, it sketches a research design for a non-archival study to evaluate the paper’s findings. This code base, adapted from TREAT, demonstrates how the template applies to this project and serves as a structured guide for reproducible empirical research in accounting.
   <!--
@@ -52,22 +52,35 @@ header-includes:
 
 # List of Abbreviations
 \setlength{\parindent}{0em}
-**CRSP**: Center for Research in Security Prices
+**CRSP**: Center for Research in Security Prices  
+**CQA**: Corporate Decision-Making and Quantitative Analysis  
 **EC**: European Commission  
 **EU**: European Union  
 **IDE**: Integrated Development Environment  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
-**UK**: United Kingdom   
-**WRDS**: Wharton Research Data Services
+**UK**: United Kingdom  
+**WRDS**: Wharton Research Data Services  
 
 \setlength{\parindent}{4em} 
 
 \pagebreak
 
 # Introduction {#sec-introduction}
-The aim of this paper is to illustrate the use of open science tools in empirical accounting research.
+The aim of this paper is to illustrate the use of open science tools in empirical accounting research. This project builds on the methodological framework established in the Corporate Decision-Making and Quantitative Analysis (CQA) course, which explored a range of empirical research methods—including archival analysis, field experiments, and survey-based approaches—to develop a comprehensive understanding of corporate decision-making and quantitative analysis. Expanding on prior empirical research conducted in Assignments I and II, this paper extends the empirical focus of the course. Assignment I examined audit market concentration in the EU using Transparency Reports data, offering insights into the dominance of major audit firms and the structure of the European audit market. Assignment II explored the economic implications of corporate financial reporting, focusing on @graham_economic_2005 to analyze managerial decision-making, earnings management strategies, and voluntary disclosure practices. This study highlighted the trade-offs between short-term earnings predictability and long-term firm value and provided a foundation for understanding corporate incentives in financial reporting.
 
-The original report by @EC_Report_2024 examines trends in the European Union (EU) market for statutory audits of public interest entities (PIEs) from 2019 to 2021, with a focus on market concentration, audit quality risks, and the effectiveness of audit committees. This report is the third check-in on how the EU’s auditing standards and market structures are evolving since the *Article 27 of Regulation (EU) No 537/2014* [-@EU_Regulation_537_2014] was introduced, which introduces a host of specific audit requirements for PIEs. A statutory audit is a legally mandated evaluation of financial records aimed at certifying the accuracy of companies’ financial statements, thereby enhancing stakeholder confidence and supporting the orderly functioning of markets [@EC_Auditing_Website]. The report by @EC_Report_2024 argues that while statutory audits play a crucial role in fostering confidence in financial markets, persistent market concentration and quality deficiencies highlight the need for strengthened oversight and improved transparency to ensure the resilience and reliability of audit practices across the EU.
+Building on these foundations, Assignment III investigates the informativeness of quarterly earnings announcements and their contribution to annual share price movements. The project replicates and extends @ball_how_2008, assessing the extent to which earnings releases serve as a source of new information for financial markets. By integrating multiple datasets from WRDS and applying an event-study methodology, this study evaluates the economic role of earnings disclosures in market efficiency. The integration of multiple databases adds complexity, requiring a detailed understanding of their structures and careful scripting to extract, align, and analyze data effectively. Key tasks include replicating and comparing original results, extending the analysis to data from 2007–2023, and applying the methodology to a non-U.S. country to explore cross-market variations. 
+
+Beyond empirical replication, the project also documents research design choices, replication steps, and explicit assumptions made whenever the original paper was unclear on how to proceed. It discusses variations between original and reproduced results and provides insights into the timeliness and market impact of earnings announcements across different timeframes and jurisdictions. Additionally, it sketches a research design for a non-archival study to evaluate the paper’s findings through an alternative methodological lens. This project leverages the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) to establish an open science-oriented infrastructure, ensuring transparency, replicability, and structured workflows for empirical accounting research.
+
+Earnings announcements provide investors with valuable information about a firm’s market value, with stock prices reacting significantly when earnings news deviates from expectations [@fink_review_2021, p.2]. The seminal study by @ball_empirical_1968 was the first to document this relationship, and over the past decades, more than a thousand studies have examined the interplay between capital markets and financial statements, a research stream that originated with Ball and Brown (1968) [@kothari_capital_2001]. This reinforces the role of earnings announcements as a crucial source of financial information.
+
+Building on this foundation, the original study by @ball_how_2008 investigates the extent to which quarterly earnings announcements contribute new information to the market, assessing their role in shaping annual share price movements. By estimating the R² from regressions of annual stock returns on earnings announcement window returns, the paper quantifies the informativeness of earnings releases, finding that they account for only 1% to 2% of total annual volatility. This challenges the assumption that earnings provide substantial new information and instead suggests a confirmatory role in financial reporting, reinforcing prior market expectations rather than acting as a primary source of new insights. The study further documents an increasing trend in earnings informativeness in recent years, potentially linked to regulatory changes, shifts in analyst activity, or broader market conditions.
+
+While @ball_how_2008 provide key insights into the informativeness of earnings announcements, their study was conducted within a specific timeframe and market context. Since then, financial markets have undergone significant changes due to regulatory reforms, economic crises, and technological advancements in financial information processing. Moreover, the extent to which earnings informativeness varies across international markets remains underexplored. By replicating their study with updated data from 2007–2023 and applying the methodology to a non-U.S. country, this project reassesses the robustness of their findings, examines long-term trends, and evaluates cross-country differences in earnings informativeness. Through this approach, it critically evaluates the generalizability of the original results and provides further insights into the economic role of earnings announcements in financial markets, offering a contemporary perspective on their evolving informativeness and implications for investors, analysts, and policymakers.
+
+The paper is structured into sections corresponding to Tasks 1–4, where each section presents the research design choices and assumptions, documents the replication steps, and analyzes the replication results. The concluding remarks are provided in @sec-conclusion.
+
+# Task 1 {#sec-task1}
 
 This paper replicates Figure 3 from the European Commission’s [-@EC_Report_2024] report, which visualizes the market shares of audit firms — Big 4, CR4, and 10KAP — by the number of PIE statutory audits conducted in 2021 across EU countries and at the EU level. The replication provides insights into market concentration and the dominance of major audit firms, reflecting variations in audit practices and competition across Europe.
 
@@ -96,7 +109,7 @@ plt.figure(fig.number)
 plt.show()
 ```
 
-# Research Design Choices and Assumptions {#sec-research_design_assumptions}
+## Research Design Choices and Assumptions - Task 1 {#sec-research_design_assumptions1}
 The aim of Assignment I is to replicate a specific empirical figure (Figure 3) from the report by @EC_Report_2024. This figure involves analyzing the market shares of audit firms (Big 4, CR4, and 10KAP) across EU countries and at the EU level for PIE statutory audits conducted in 2021. The replication process includes data loading, preparation, and cleaning, followed by the computation and visualization of market concentration measures. For Assignment I, I pulled data from the Audit Analytics database via WRDS and used the Python programming language to carry out the empirical analysis. Visual Studio Code was used as the Integrated Development Environment (IDE) for writing, debugging, and optimizing the Python code.
 
 The replication is based on data pulled from the Audit Analytics Transparency Reports database, specifically from `audit_europe.feed76_transparency_reports` table, which was filtered and aggregated for the analysis. The table offers Transparency Reports published annually by audit firms based in the EEA and Switzerland, along with the names of all entities listed in each audit firm’s Transparency Reports [@WRDS_Audit_Analytics_Transparency_Reports].
@@ -114,14 +127,14 @@ In addition, I impose the following assumptions to ensure clarity and consistenc
 By following the steps provided in @sec-replication_steps and adhering to the assumptions made, I successfully replicated the analysis and produced the required figure. A thorough step-by-step approach, with each step clearly documented, helped to understand and verify the outputs.
 
 
-# Replication Steps {#sec-replication_steps}
+## Replication Steps - Task 1 {#sec-replication_steps1}
 
-## Step 1: Pulling the Data and Managing the Database
+### Step 1: Pulling the Data and Managing the Database
 This Assignment involves pulling data directly from the Audit Analytics database and preparing the data for further analysis from raw data to final output.
 
 To ensure data relevance, the pulling process was restricted to data for the year 2021. The variable `trans_report_auditor_state` was used to filter the data to include only audit firms associated with the specific EU and EEA countries, as specified in configuration file `config/pull_data_cfg​`. This filtering step ensured that the analysis focuses on audit market concentration within the geographical scope and year range as defined by @EC_Report_2024.
 
-## Step 2: Data Preparation {#sec-step2_preparation}
+### Step 2: Data Preparation {#sec-step2_preparation}
 The raw Transparency Report dataset initially contained 13,385 observations, representing entries for the year 2021. To ensure consistency with @EC_Report_2024, the abbreviation 'GR' for Greece was replaced with 'EL' in the trans_report_auditor_state field, affecting 188 rows.
 
 The `number_of_disclosed_pies` variable provides the clearest indication of statutory audits conducted by each auditor for PIEs. The definition of PIEs varies across EU and EEA countries [@AccountancyEurope_PIE_2017], but if Transparency Reports consistently follow country-specific definitions, using the provided variable is reasonable. An important verification step involved comparing the reported `number_of_disclosed_pies` with the count of unique `entity_map_fkey` entries for each `transparency_report_fkey`. This analysis revealed that 5,696 transparency reports included fewer entities in the dataset than the disclosed PIEs, suggesting that some PIE entities might be missing from the dataset. This discrepancy reflects missing PIE data rather than the inclusion of non-PIE entities, hence it is assumed that all entities in the dataset are PIEs, maintaining consistency in the framework for analysis.
@@ -136,7 +149,7 @@ Audit firms were then categorized into groups, including the Big 4 (Deloitte, EY
 
 These preparation steps ensured alignment with the methodology of @EC_Report_2024 and the dataset’s readiness for subsequent analysis.
 
-## Step 3: Analysis Implementation and Figure Reproduction
+### Step 3: Analysis Implementation and Figure Reproduction
 The analysis step computes market concentration metrics for audit firms across EU countries and at the EU level using the prepared transparency data. The analysis begins by calculating the market shares of the Big 4, 10KAP, and CR4 audit firm groups for the number of statutory audits conducted in 2021. For each country, the Big 4 market share is derived as the percentage of PIE statutory audits conducted by Deloitte, EY, KPMG, and PwC, while the CR4 market share represents the top four audit firms in each country based on audit counts. The 10KAP market share includes the Big 4 along with six additional networks, providing a broader view of market concentration.
 
 The following formula is used to calculate market share:
@@ -146,7 +159,7 @@ $$
 
 The analysis also includes the creation of a bar chart visualizing market shares for all countries and the EU aggregate, saved in both PNG and pickle formats. The aggregated market share data is saved in CSV format, ensuring reproducibility and further analysis opportunities.
 
-# Results {#sec-results}
+## Results - Task 1 {#sec-results}
 To verify the results of analysis step and observe trends before plotting, I have additionally saved the CSV output in `aggregated_market_shares.csv`. The analysis of market shares for statutory audits across European countries reveals distinct patterns of market concentration and auditor dominance. Big 4 firms exhibit a significant presence, often commanding a dominant share in many countries. For example, countries such as the Czech Republic, Estonia, and Finland demonstrate Big 4 market shares exceeding 95%, reflecting the significant influence of these firms in specific markets. However, the extent of this dominance varies, with lower Big 4 shares observed in countries like Bulgaria (17.5%) and Greece (43.6%), indicating a more diversified audit market in these regions. The analysis reveals that the Big 4 hold a market share exceeding 80% in 11 EU countries. This aligns with rthe finding of @EC_Report_2024, which similarly highlights that the Big 4 dominate over 80% of the market share in 11 Member States.
 
 The inclusion of additional audit networks through the 10KAP grouping increases the market share substantially across all countries, as expected. This is particularly evident in countries like Ireland, Malta, and the Netherlands, where the 10KAP share reaches 100%, reflecting the full inclusion of statutory audits under this grouping. In contrast, countries like Bulgaria and Poland, with 10KAP shares of 41.8% and 63.6%, respectively, suggest the presence of a substantial number of statutory audits conducted by unaffiliated or smaller firms.
@@ -162,13 +175,11 @@ The results for Romania show notable discrepancies. The EC Report indicates mark
 In summary, the replication effectively captures the original report's key findings, confirming the dominance of the Big 4 and the broader 10KAP group in the European audit market. The analysis highlights varying degrees of market concentration across countries, with some demonstrating a more decentralized audit landscape. While discrepancies in individual country results, such as Romania, underline the importance of methodological alignment, the strong similarity between the overall market shares reported in the original report and the replicated results underscores the robustness and reliability of the findings.
 
 # Conclusion {#sec-conclusion}
-The project effectively demonstrates the use of a systematic and collaborative workflow for analyzing audit market concentration across Europe, leveraging the TRR 266 Template for Reproducible Empirical Accounting Research. By following a structured approach, I successfully replicated a key figure and empirical findings of @EC_Report_2024, offering insights into the dominance of the Big 4 and the broader 10KAP group in the European audit market.
+This project effectively demonstrates the use of a systematic and collaborative workflow for empirical accounting research, leveraging the TRR 266 Template for Reproducible Empirical Accounting Research. By following an open science approach, I successfully replicated key tables and figures from @ball_how_2008, providing insights into how earnings announcements contribute to price formation and market efficiency. While exact replications often yield different samples and outcomes due to dataset updates or methodological variations, my results align closely with the statistics presented in the original study, reinforcing the reliability of the replication process. Moreover, by extending the analysis beyond the original study’s U.S. market focus, the project highlights how market structures and investor behaviors influence the informativeness of earnings disclosures in different jurisdictions.
 
-This assignment is an exact replication of the report by @EC_Report_2024, where the goal was to closely follow the report’s approach wherever possible and make justified assumptions when necessary. While exact replications often yield different samples and outcomes due to dataset updates or methodological variations, my results align closely with the statistics presented in the original study, reinforcing the reliability of the replication process.
+The study contributes to the ongoing discussion on market efficiency and the economic role of corporate disclosures by providing empirical evidence on how earnings informativeness has evolved over time and across jurisdictions. The cross-country analysis highlights variations in market responses to earnings announcements, suggesting that institutional factors, market structures, and investor behavior play a role in shaping how financial information is processed. These findings have implications for investors, analysts, and policymakers, as they underscore the importance of regulatory consistency and market transparency in shaping the effectiveness of financial reporting.
 
-The analysis reveals significant variation in market concentration across countries, with the Big 4 accounting for over 80% of market share in 11 countries, while others show a more decentralized landscape where non-Big 4 firms contribute substantially. These findings align closely with the original study results, confirming the reliability of the data and methodologies used in this replication. However, discrepancies in specific countries, such as Romania, highlight the importance of transparent methodologies and consistent definitions when conducting such analyses.
-
-This assignment required a comprehensive application of programming skills and institutional knowledge gained throughout the course, integrating data analysis, replication, and visualization techniques in line with open science principles. In the future, this repository can be cloned or forked (if made public) to kickstart further projects on earnings management measures analysis. Thanks for reading!
+This assignment required a comprehensive application of programming skills and institutional knowledge gained throughout the course, integrating data analysis, replication, and visualization techniques in line with open science principles. In the future, this repository can be cloned or forked (if made public) to facilitate further research on earnings informativeness, enabling additional extensions or robustness tests. Additionally, the survey developed as part of the non-archival study proposal can be further refined and expanded, providing a structured framework for gathering primary data on market participants’ interpretations of earnings announcements. Through this approach, the study not only revisits a fundamental question in financial research but also provides a foundation for future empirical investigations into the evolving role of earnings announcements in global capital markets, both through archival and non-archival methodologies. Thanks for reading!
 
 
 \pagebreak
