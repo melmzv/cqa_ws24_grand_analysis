@@ -49,7 +49,7 @@ You start by setting up a few tools on your system:
 > [!WARNING]
 > While generating the presentation, you may notice that some sections and subsections might not have the correct beamer formatting applied. This occurs due to the color coding in the `beamer_theme_trr266.sty` file, which may require further adjustments. The current output, based on the provided template, may require further customization to ensure consistency across all slides.
 
-> **🌳 Tip:** In order to present the project's directory structure in the presentation by simply copy and paste, use the [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=Fuzionix.file-tree-extractor&ssr=false#overview).
+> **🌳 Tip:** In order to present the project's directory structure in the presentation by simply copy and paste from within the VS Code, use the [Extension](https://marketplace.visualstudio.com/items?itemName=Fuzionix.file-tree-extractor&ssr=false#overview).
 
 > [!TIP]
 > - Download the [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=axelrindle.duplicate-file) for duplicating files. This will streamline your workflow by allowing you to duplicate files directly within Visual Studio Code, rather than manually copying and pasting in Finder (Mac) or File Explorer (Windows). :wink:
