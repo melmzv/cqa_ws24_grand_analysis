@@ -54,11 +54,12 @@ header-includes:
 \setlength{\parindent}{0em}
 **CRSP**: Center for Research in Security Prices  
 **CQA**: Corporate Decision-Making and Quantitative Analysis  
-**EC**: European Commission  
-**EU**: European Union  
+**DV**: Dependent Variable
+**IV**: Independent Variable
+**EU**: European Union  ##
 **IDE**: Integrated Development Environment  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
-**UK**: United Kingdom  
+**UK**: United Kingdom  ##
 **WRDS**: Wharton Research Data Services  
 
 \setlength{\parindent}{4em} 
@@ -68,11 +69,11 @@ header-includes:
 # Introduction {#sec-introduction}
 The aim of this paper is to illustrate the use of open science tools in empirical accounting research. This project builds on the methodological framework established in the Corporate Decision-Making and Quantitative Analysis (CQA) course, which explored a range of empirical research methods—including archival analysis, field experiments, and survey-based approaches—to develop a comprehensive understanding of corporate decision-making and quantitative analysis. Expanding on prior empirical research conducted in Assignments I and II, this paper extends the empirical focus of the course. Assignment I examined audit market concentration in the EU using Transparency Reports data, offering insights into the dominance of major audit firms and the structure of the European audit market. Assignment II explored the economic implications of corporate financial reporting, focusing on @graham_economic_2005 to analyze managerial decision-making, earnings management strategies, and voluntary disclosure practices. This study highlighted the trade-offs between short-term earnings predictability and long-term firm value and provided a foundation for understanding corporate incentives in financial reporting.
 
-Building on these foundations, Assignment III investigates the informativeness of quarterly earnings announcements and their contribution to annual share price movements. The project replicates and extends @ball_how_2008, assessing the extent to which earnings releases serve as a source of new information for financial markets. By integrating multiple datasets from WRDS and applying an event-study methodology, this study evaluates the economic role of earnings disclosures in market efficiency. The integration of multiple databases adds complexity, requiring a detailed understanding of their structures and careful scripting to extract, align, and analyze data effectively. Key tasks include replicating and comparing original results, extending the analysis to data from 2007–2023, and applying the methodology to a non-U.S. country to explore cross-market variations. 
+Building on these foundations, Assignment III investigates the informativeness of quarterly earnings announcements and their contribution to annual share price movements. The project replicates and extends @ball_how_2008, assessing the extent to which earnings releases serve as a source of new information for financial markets. By integrating multiple datasets from WRDS and applying an event-study methodology, this study evaluates the economic role of earnings disclosures in market efficiency, showcasing the valuation purpose of accounting. The integration of multiple databases adds complexity, requiring a detailed understanding of their structures and careful scripting to extract, align, and analyze data effectively. Key tasks include replicating and comparing original results, extending the analysis to data from 2007–2023, and applying the methodology to a non-U.S. country to explore cross-market variations. 
 
 Beyond empirical replication, the project also documents research design choices, replication steps, and explicit assumptions made whenever the original paper was unclear on how to proceed. It discusses variations between original and reproduced results and provides insights into the timeliness and market impact of earnings announcements across different timeframes and jurisdictions. Additionally, it sketches a research design for a non-archival study to evaluate the paper’s findings through an alternative methodological lens. This project leverages the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) to establish an open science-oriented infrastructure, ensuring transparency, replicability, and structured workflows for empirical accounting research.
 
-Earnings announcements provide investors with valuable information about a firm’s market value, with stock prices reacting significantly when earnings news deviates from expectations [@fink_review_2021, p.2]. The seminal study by @ball_empirical_1968 was the first to document this relationship, and over the past decades, more than a thousand studies have examined the interplay between capital markets and financial statements, a research stream that originated with Ball and Brown (1968) [@kothari_capital_2001]. This reinforces the role of earnings announcements as a crucial source of financial information.
+Earnings announcements provide investors with valuable information about a firm’s market value, with stock prices reacting significantly when earnings news deviates from expectations [@fink_review_2021, p.2]. The seminal study by @ball_empirical_1968 was the first to document this relationship, showing that stock prices anticipate earnings surprises, with most of the market reaction occurring before the official announcement, suggesting that earnings reports primarily confirm rather than introduce new information. Over the past decades, more than a thousand studies have examined the interplay between capital markets and financial statements, a research stream that originated with Ball and Brown (1968)  [@kothari_capital_2001]. This reinforces the role of earnings announcements as a crucial source of financial information.
 
 Building on this foundation, the original study by @ball_how_2008 investigates the extent to which quarterly earnings announcements contribute new information to the market, assessing their role in shaping annual share price movements. By estimating the R² from regressions of annual stock returns on earnings announcement window returns, the paper quantifies the informativeness of earnings releases, finding that they account for only 1% to 2% of total annual volatility. This challenges the assumption that earnings provide substantial new information and instead suggests a confirmatory role in financial reporting, reinforcing prior market expectations rather than acting as a primary source of new insights. The study further documents an increasing trend in earnings informativeness in recent years, potentially linked to regulatory changes, shifts in analyst activity, or broader market conditions.
 
@@ -80,7 +81,7 @@ While @ball_how_2008 provide key insights into the informativeness of earnings a
 
 The paper is structured into sections corresponding to Tasks 1–3 (@sec-task1, @sec-task2, @sec-task3), each detailing the research design choices and assumptions, documenting the replication steps, and analyzing the replication results for the respective segment. @sec-task4 sketches the survey design as a non-archival study that allows evaluating the key findings of the seminal paper. The concluding remarks are provided in @sec-conclusion.
 
-# Task 1 {#sec-task1}
+# Task 1 - Replication of Key Tables and Figures {#sec-task1}
 
 This paper replicates Figure 3 from the European Commission’s [-@EC_Report_2024] report, which visualizes the market shares of audit firms — Big 4, CR4, and 10KAP — by the number of PIE statutory audits conducted in 2021 across EU countries and at the EU level. The replication provides insights into market concentration and the dominance of major audit firms, reflecting variations in audit practices and competition across Europe.
 
@@ -174,13 +175,15 @@ The results for Romania show notable discrepancies. The EC Report indicates mark
 
 In summary, the replication effectively captures the original report's key findings, confirming the dominance of the Big 4 and the broader 10KAP group in the European audit market. The analysis highlights varying degrees of market concentration across countries, with some demonstrating a more decentralized audit landscape. While discrepancies in individual country results, such as Romania, underline the importance of methodological alignment, the strong similarity between the overall market shares reported in the original report and the replicated results underscores the robustness and reliability of the findings.
 
-# Task 2 {#sec-task2}
+# Task 2 - Extending the Analysis to 2007–2023 {#sec-task2}
 
 
-# Task 3 {#sec-task3}
+# Task 3 - Cross-Country Replication {#sec-task3}
 
 
-# Task 4 {#sec-task4}
+# Task 4 - Research Design for a Non-Archival Study {#sec-task4}
+
+
 
 # Conclusion {#sec-conclusion}
 This project effectively demonstrates the use of a systematic and collaborative workflow for empirical accounting research, leveraging the TRR 266 Template for Reproducible Empirical Accounting Research. By following an open science approach, I successfully replicated key tables and figures from @ball_how_2008, providing insights into how earnings announcements contribute to price formation and market efficiency. While exact replications often yield different samples and outcomes due to dataset updates or methodological variations, my results align closely with the statistics presented in the original study, reinforcing the reliability of the replication process. Moreover, by extending the analysis beyond the original study’s U.S. market focus, the project highlights how market structures and investor behaviors influence the informativeness of earnings disclosures in different jurisdictions.
