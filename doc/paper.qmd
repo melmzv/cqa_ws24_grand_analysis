@@ -54,9 +54,9 @@ header-includes:
 \setlength{\parindent}{0em}
 **CRSP**: Center for Research in Security Prices  
 **CQA**: Corporate Decision-Making and Quantitative Analysis  
-**DV**: Dependent Variable
-**HU**: Humboldt-Universität zu Berlin
-**IV**: Independent Variable
+**DV**: Dependent Variable  
+**HU**: Humboldt-Universität zu Berlin  
+**IV**: Independent Variable  
 **EU**: European Union  ##
 **IDE**: Integrated Development Environment  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
@@ -111,7 +111,7 @@ plt.figure(fig.number)
 plt.show()
 ```
 
-## Research Design Choices and Assumptions - Task 1 {#sec-research_design_assumptions1}
+## Research Design Choices and Assumptions {#sec-research_design_assumptions1}
 The aim of Assignment I is to replicate a specific empirical figure (Figure 3) from the report by @EC_Report_2024. This figure involves analyzing the market shares of audit firms (Big 4, CR4, and 10KAP) across EU countries and at the EU level for PIE statutory audits conducted in 2021. The replication process includes data loading, preparation, and cleaning, followed by the computation and visualization of market concentration measures. For Assignment I, I pulled data from the Audit Analytics database via WRDS and used the Python programming language to carry out the empirical analysis. Visual Studio Code was used as the Integrated Development Environment (IDE) for writing, debugging, and optimizing the Python code.
 
 The replication is based on data pulled from the Audit Analytics Transparency Reports database, specifically from `audit_europe.feed76_transparency_reports` table, which was filtered and aggregated for the analysis. The table offers Transparency Reports published annually by audit firms based in the EEA and Switzerland, along with the names of all entities listed in each audit firm’s Transparency Reports [@WRDS_Audit_Analytics_Transparency_Reports].
@@ -129,7 +129,7 @@ In addition, I impose the following assumptions to ensure clarity and consistenc
 By following the steps provided in @sec-replication_steps and adhering to the assumptions made, I successfully replicated the analysis and produced the required figure. A thorough step-by-step approach, with each step clearly documented, helped to understand and verify the outputs.
 
 
-## Replication Steps - Task 1 {#sec-replication_steps1}
+## Replication Steps {#sec-replication_steps1}
 
   Step 1: Pulling the Data and Managing the Database
 This Assignment involves pulling data directly from the Audit Analytics database and preparing the data for further analysis from raw data to final output.
@@ -161,7 +161,7 @@ $$
 
 The analysis also includes the creation of a bar chart visualizing market shares for all countries and the EU aggregate, saved in both PNG and pickle formats. The aggregated market share data is saved in CSV format, ensuring reproducibility and further analysis opportunities.
 
-## Results - Task 1 {#sec-results}
+## Results {#sec-results1}
 To verify the results of analysis step and observe trends before plotting, I have additionally saved the CSV output in `aggregated_market_shares.csv`. The analysis of market shares for statutory audits across European countries reveals distinct patterns of market concentration and auditor dominance. Big 4 firms exhibit a significant presence, often commanding a dominant share in many countries. For example, countries such as the Czech Republic, Estonia, and Finland demonstrate Big 4 market shares exceeding 95%, reflecting the significant influence of these firms in specific markets. However, the extent of this dominance varies, with lower Big 4 shares observed in countries like Bulgaria (17.5%) and Greece (43.6%), indicating a more diversified audit market in these regions. The analysis reveals that the Big 4 hold a market share exceeding 80% in 11 EU countries. This aligns with rthe finding of @EC_Report_2024, which similarly highlights that the Big 4 dominate over 80% of the market share in 11 Member States.
 
 The inclusion of additional audit networks through the 10KAP grouping increases the market share substantially across all countries, as expected. This is particularly evident in countries like Ireland, Malta, and the Netherlands, where the 10KAP share reaches 100%, reflecting the full inclusion of statutory audits under this grouping. In contrast, countries like Bulgaria and Poland, with 10KAP shares of 41.8% and 63.6%, respectively, suggest the presence of a substantial number of statutory audits conducted by unaffiliated or smaller firms.
@@ -177,10 +177,14 @@ The results for Romania show notable discrepancies. The EC Report indicates mark
 In summary, the replication effectively captures the original report's key findings, confirming the dominance of the Big 4 and the broader 10KAP group in the European audit market. The analysis highlights varying degrees of market concentration across countries, with some demonstrating a more decentralized audit landscape. While discrepancies in individual country results, such as Romania, underline the importance of methodological alignment, the strong similarity between the overall market shares reported in the original report and the replicated results underscores the robustness and reliability of the findings.
 
 # Task 2 - Extending the Analysis to 2007–2023 {#sec-task2}
-
+## Research Design Choices and Assumptions {#sec-research_design_assumptions2}
+## Replication Steps {#sec-replication_steps2}
+## Results {#sec-results2}
 
 # Task 3 - Cross-Country Replication {#sec-task3}
-
+## Research Design Choices and Assumptions {#sec-research_design_assumptions3}
+## Replication Steps {#sec-replication_steps3}
+## Results {#sec-results3}
 
 # Task 4 - Research Design for a Non-Archival Study {#sec-task4}
 
