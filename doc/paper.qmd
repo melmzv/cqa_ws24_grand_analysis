@@ -55,6 +55,7 @@ header-includes:
 **CRSP**: Center for Research in Security Prices  
 **CQA**: Corporate Decision-Making and Quantitative Analysis  
 **DV**: Dependent Variable
+**HU**: Humboldt-Universität zu Berlin
 **IV**: Independent Variable
 **EU**: European Union  ##
 **IDE**: Integrated Development Environment  
@@ -183,7 +184,55 @@ In summary, the replication effectively captures the original report's key findi
 
 # Task 4 - Research Design for a Non-Archival Study {#sec-task4}
 
+The research design follows the generalization goal in empirical literature, emphasizing the need to validate findings across different methods [@bloomfield_gathering_2016]. @ball_how_2008 assess earnings informativeness through stock price reactions, but triangulation—beyond replication—requires diverse methods to examine the same question [@bloomfield_gathering_2016, p.353]. While price reactions indicate market response, they do not capture investor perceptions. A survey directly evaluates whether market participants view earnings announcements as confirmatory or informative. If investors confirm a secondary role, it reinforces Ball and Shivakumar’s (2008) findings, ensuring informativeness reflects cognitive and behavioral mechanisms rather than price fluctuations. These insights could inform corporate reporting strategies by clarifying how investors prioritize disclosures.
 
+A survey is the most suitable non-archival method, capturing investor sentiment beyond what archival data provides. Unlike lab experiments, which lack real-world applicability, surveys measure the dependent variable (DV) by eliciting participant perceptions [@bloomfield_gathering_2016, p.358]. Field experiments, though capturing real-time reactions, require direct intervention, posing ethical and logistical challenges. A long-term research program combining surveys and field studies would enhance validity, leveraging unlimited funds to assess investor decision-making and market responses.
+
+To ensure survey reliability, design strategies follow @bruggemann_worku_2024. A sample of 300 investors, analysts, and financial professionals will provide institutional and retail perspectives while balancing statistical power and feasibility. The survey will be distributed via email through financial networks, investor associations, and professional platforms (e.g., LinkedIn, CFA societies) and in paper format at finance conferences. The Humboldt-Universität zu Berlin (HU) brand may be used, subject to approval. Respondents will be assured confidentiality and offered an €20 honorarium. A pilot study with 30 participants will refine question clarity, survey length, and response distribution, helping identify unclear or missing questions and assess completion time.
+
+To minimize response bias, questions will be neutrally worded to capture pre- and post-announcement perceptions. The fully anonymous survey ensures candid responses without requiring personal financial history.
+
+The **DV** is the perceived informativeness of earnings announcements, measured through survey responses on whether they are confirmatory or informative. Independent variables (**IVs**) include investor preparation, market awareness, reaction timing, perceived novelty of earnings, key financial indicators, and external conditions. These are measured via Likert-scale, ranking, and multiple-choice questions, supplemented by qualitative insights from follow-up interviews.
+
+To deepen findings, selected participants will be invited for confidential follow-up interviews, ensuring diversity in investment strategies, industries, and expertise. These interviews will be conducted via video conferencing or phone calls. The following sections provide detailed sketches of the survey and interview designs.
+
+## Survey Questions
+
+1. **How do you typically prepare for earnings announcements in your investment decisions?**
+    * I conduct in-depth research and adjust my positions in advance 
+    * I monitor but rarely adjust positions pre-announcement
+    * I rely on market consensus, analyst forecasts, and AI-driven insights
+    * I do not make investment decisions based on earnings announcements
+
+2. **How do you typically react to earnings announcements?**
+    * I adjust my investment strategy immediately based on the announcement.
+    * I wait for further analysis before making changes.
+    * I rarely make investment decisions based on earnings announcements.
+
+3. **To what extent do you believe that earnings announcements provide new information beyond what is already reflected in market prices?**
+    * Always
+    * Most of the time
+    * Sometimes
+    * Rarely
+    * Never
+
+4. **Rank the following factors in order of importance when evaluating earnings announcements (i = most important, v = least important):**
+    i) Earnings per share (EPS) compared to analyst forecasts
+    ii) Revenue growth
+    iii) Management guidance and commentary
+    iv) Market reaction on the day of the announcement
+    v) Industry trends and macroeconomic conditions
+
+5. **Do you consider earnings announcements to be more confirmatory or informative?**
+    * Primarily confirmatory (reinforce existing expectations)
+    * Primarily informative (provide new insights)
+    * A mix of both
+
+## Follow-Up Interview Questions
+
+1. Can you describe a recent instance where an earnings announcement significantly influenced your investment decision?
+2. In your experience, are there specific industries where earnings announcements are more informative than confirmatory?
+3. Do you use earnings announcements differently depending on market conditions (e.g., economic downturn vs. growth periods)?
 
 # Conclusion {#sec-conclusion}
 This project effectively demonstrates the use of a systematic and collaborative workflow for empirical accounting research, leveraging the TRR 266 Template for Reproducible Empirical Accounting Research. By following an open science approach, I successfully replicated key tables and figures from @ball_how_2008, providing insights into how earnings announcements contribute to price formation and market efficiency. While exact replications often yield different samples and outcomes due to dataset updates or methodological variations, my results align closely with the statistics presented in the original study, reinforcing the reliability of the replication process. Moreover, by extending the analysis beyond the original study’s U.S. market focus, the project highlights how market structures and investor behaviors influence the informativeness of earnings disclosures in different jurisdictions.
