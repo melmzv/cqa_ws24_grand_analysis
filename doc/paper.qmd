@@ -57,10 +57,10 @@ header-includes:
 **DV**: Dependent Variable  
 **HU**: Humboldt-Universität zu Berlin  
 **IV**: Independent Variable  
-**EU**: European Union  ##
+**EU**: European Union  ##  
 **IDE**: Integrated Development Environment  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
-**UK**: United Kingdom  ##
+**UK**: United Kingdom  ##  
 **WRDS**: Wharton Research Data Services  
 
 \setlength{\parindent}{4em} 
@@ -220,12 +220,12 @@ To deepen findings, selected participants will be invited for confidential follo
     * Rarely
     * Never
 
-4. **Rank the following factors in order of importance when evaluating earnings announcements (i = most important, v = least important):**
-    i) Earnings per share (EPS) compared to analyst forecasts
-    ii) Revenue growth
-    iii) Management guidance and commentary
-    iv) Market reaction on the day of the announcement
-    v) Industry trends and macroeconomic conditions
+4. **Rank the following factors in order of importance when evaluating earnings announcements (1 = most important, 5 = least important):**
+    * Earnings per share (EPS) compared to analyst forecasts
+    * Revenue growth
+    * Management guidance and commentary
+    * Market reaction on the day of the announcement
+    * Industry trends and macroeconomic conditions
 
 5. **Do you consider earnings announcements to be more confirmatory or informative?**
     * Primarily confirmatory (reinforce existing expectations)
