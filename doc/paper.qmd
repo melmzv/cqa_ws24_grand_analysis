@@ -60,8 +60,8 @@ header-includes:
 **EU**: European Union  ##  
 **IDE**: Integrated Development Environment  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
-**UK**: United Kingdom  ## 
-**US**:: United States 
+**UK**: United Kingdom  ##  
+**US**:: United States  
 **WRDS**: Wharton Research Data Services  
 
 \setlength{\parindent}{4em} 
