@@ -163,6 +163,18 @@ $$
 The analysis also includes the creation of a bar chart visualizing market shares for all countries and the EU aggregate, saved in both PNG and pickle formats. The aggregated market share data is saved in CSV format, ensuring reproducibility and further analysis opportunities.
 
 ## Results {#sec-results1}
+Comparing our replication results of Figure 1 (see Figure ## below) with those in the original report (see Figure 1 below) reveals both similarities and discrepancies.
+
+```{python}
+#| label: fig1_original_png
+#| fig-cap: "Original Figure 1 from Ball and Shivakumar (2008)"
+#| echo: false
+
+from IPython.display import Image
+
+Image(filename="fig1_original.png")
+```
+
 To verify the results of analysis step and observe trends before plotting, I have additionally saved the CSV output in `aggregated_market_shares.csv`. The analysis of market shares for statutory audits across European countries reveals distinct patterns of market concentration and auditor dominance. Big 4 firms exhibit a significant presence, often commanding a dominant share in many countries. For example, countries such as the Czech Republic, Estonia, and Finland demonstrate Big 4 market shares exceeding 95%, reflecting the significant influence of these firms in specific markets. However, the extent of this dominance varies, with lower Big 4 shares observed in countries like Bulgaria (17.5%) and Greece (43.6%), indicating a more diversified audit market in these regions. The analysis reveals that the Big 4 hold a market share exceeding 80% in 11 EU countries. This aligns with rthe finding of @EC_Report_2024, which similarly highlights that the Big 4 dominate over 80% of the market share in 11 Member States.
 
 The inclusion of additional audit networks through the 10KAP grouping increases the market share substantially across all countries, as expected. This is particularly evident in countries like Ireland, Malta, and the Netherlands, where the 10KAP share reaches 100%, reflecting the full inclusion of statutory audits under this grouping. In contrast, countries like Bulgaria and Poland, with 10KAP shares of 41.8% and 63.6%, respectively, suggest the presence of a substantial number of statutory audits conducted by unaffiliated or smaller firms.
