@@ -87,6 +87,8 @@ The paper is structured into sections corresponding to Tasks 1–3 (@sec-task1, 
 
 Task 1 is the most comprehensive, replicating key tables and figures from @ball_how_2008 using US data (1972–2006) to establish baseline results. This ensures alignment with the original findings before extending the analysis in later tasks. By reconstructing Table 1 (Panel A), Table 2 (all panels), and Figure 1 (all panels), this task evaluates the robustness of the original results and identifies potential discrepancies, offering insights into data consistency, methodology, and market dynamics over the examined period.
 
+
+-----
 The project uses data from the Audit Analytics database on Transparency Reports via Wharton Research Data Services (WRDS) for the year 2021, covering PIEs across EU countries. The replication closely follows the methodology outlined by @EC_Report_2024. It focuses on three key market concentration measures: the market share of the Big 4 audit firms, the CR4 market share for the largest four firms in each country, and the 10KAP market share, which includes the Big 4 and additional major networks. These measures provide a detailed assessment of audit firm dominance and competition, offering valuable insights into the structure and dynamics of the statutory audit market in Europe.
 
 The analysis involves gathering and filtering Transparency Report data, identifying relevant PIEs and EU countries, and calculating the Big 4, CR4, and 10KAP market shares for each country as well as at the EU level. Explicit assumptions were made whenever the document by @EC_Report_2024 was unclear on how to proceed. The entire Python computation code for market share calculations is available in `code/python/do_analysis.py` for detailed review if necessary. This paper focuses on the replication process, presenting visualizations, and discussing the results.
@@ -113,6 +115,15 @@ plt.show()
 ```
 
 ## Research Design Choices and Assumptions {#sec-research_design_assumptions1}
+I impose the following assumptions to ensure clarity and consistency where @ball_how_2008 do not provide explicit guidance:
+
+1. Based on the original paper, I do not gather analyst expectations or estimate earnings deviations for my replication. Instead, I only require stock return data and earnings announcement dates, which simplifies the data collection process.
+
+2. Following @ball_how_2008, I define earnings announcement windows as the three-day period surrounding the earnings release (-1 to +1), where Day -1 is the last trading day before the announcement, Day 0 is the announcement day, and Day +1 is the first trading day after the announcement. According to @center_for_research_in_security_prices_crsp_crsp_2024 guide, data are never provided on weekends or trading holidays, meaning there is no need for manual filtering of such days. However, if an earnings announcement falls on a non-trading day, adjustments are necessary to maintain the three-day window. Hence, earnings announcement dates are first extracted from Compustat and then matched with CRSP trading data to obtain stock returns for the event window (-1, 0, +1). If Day 0 falls on a weekend or holiday, it is shifted to the next available trading day. Similarly, if Day -1 or Day +1 is unavailable due to a non-trading day, the nearest prior or next trading day, respectively, is used to preserve the event window. This adjustment prevents shortening the window, ensuring a complete three-day period for capturing the full market response to earnings announcements.
+
+3. Same as @ball_how_2008, I group earnings announcements based on their actual announcement dates rather than the fiscal periods they cover. Since Compustat provides the precise earnings announcement date and CRSP aligns stock returns with trading days, this approach ensures consistency with the original study. No further adjustments are needed to realign quarters.
+
+------
 The aim of Assignment I is to replicate a specific empirical figure (Figure 3) from the report by @EC_Report_2024. This figure involves analyzing the market shares of audit firms (Big 4, CR4, and 10KAP) across EU countries and at the EU level for PIE statutory audits conducted in 2021. The replication process includes data loading, preparation, and cleaning, followed by the computation and visualization of market concentration measures. For Assignment I, I pulled data from the Audit Analytics database via WRDS and used the Python programming language to carry out the empirical analysis. Visual Studio Code was used as the Integrated Development Environment (IDE) for writing, debugging, and optimizing the Python code.
 
 The replication is based on data pulled from the Audit Analytics Transparency Reports database, specifically from `audit_europe.feed76_transparency_reports` table, which was filtered and aggregated for the analysis. The table offers Transparency Reports published annually by audit firms based in the EEA and Switzerland, along with the names of all entities listed in each audit firm’s Transparency Reports [@WRDS_Audit_Analytics_Transparency_Reports].
@@ -132,12 +143,12 @@ By following the steps provided in @sec-replication_steps and adhering to the as
 
 ## Replication Steps {#sec-replication_steps1}
 
-  Step 1: Pulling the Data and Managing the Database
+Step 1: Pulling the Data and Managing the Database
 This Assignment involves pulling data directly from the Audit Analytics database and preparing the data for further analysis from raw data to final output.
 
 To ensure data relevance, the pulling process was restricted to data for the year 2021. The variable `trans_report_auditor_state` was used to filter the data to include only audit firms associated with the specific EU and EEA countries, as specified in configuration file `config/pull_data_cfg​`. This filtering step ensured that the analysis focuses on audit market concentration within the geographical scope and year range as defined by @EC_Report_2024.
 
-  Step 2: Data Preparation {#sec-step2_preparation}
+Step 2: Data Preparation {#sec-step2_preparation}
 The raw Transparency Report dataset initially contained 13,385 observations, representing entries for the year 2021. To ensure consistency with @EC_Report_2024, the abbreviation 'GR' for Greece was replaced with 'EL' in the trans_report_auditor_state field, affecting 188 rows.
 
 The `number_of_disclosed_pies` variable provides the clearest indication of statutory audits conducted by each auditor for PIEs. The definition of PIEs varies across EU and EEA countries [@AccountancyEurope_PIE_2017], but if Transparency Reports consistently follow country-specific definitions, using the provided variable is reasonable. An important verification step involved comparing the reported `number_of_disclosed_pies` with the count of unique `entity_map_fkey` entries for each `transparency_report_fkey`. This analysis revealed that 5,696 transparency reports included fewer entities in the dataset than the disclosed PIEs, suggesting that some PIE entities might be missing from the dataset. This discrepancy reflects missing PIE data rather than the inclusion of non-PIE entities, hence it is assumed that all entities in the dataset are PIEs, maintaining consistency in the framework for analysis.
@@ -152,7 +163,7 @@ Audit firms were then categorized into groups, including the Big 4 (Deloitte, EY
 
 These preparation steps ensured alignment with the methodology of @EC_Report_2024 and the dataset’s readiness for subsequent analysis.
 
-  Step 3: Analysis Implementation and Figure Reproduction
+Step 3: Analysis Implementation and Figure Reproduction
 The analysis step computes market concentration metrics for audit firms across EU countries and at the EU level using the prepared transparency data. The analysis begins by calculating the market shares of the Big 4, 10KAP, and CR4 audit firm groups for the number of statutory audits conducted in 2021. For each country, the Big 4 market share is derived as the percentage of PIE statutory audits conducted by Deloitte, EY, KPMG, and PwC, while the CR4 market share represents the top four audit firms in each country based on audit counts. The 10KAP market share includes the Big 4 along with six additional networks, providing a broader view of market concentration.
 
 The following formula is used to calculate market share:
@@ -194,6 +205,9 @@ In summary, the replication effectively captures the original report's key findi
 This Section extends the analysis to 2007–2023, a period defined by major economic events such as the 2008 financial crisis and the COVID-19 pandemic, which may have influenced the informativeness of earnings announcements. While the task is relatively straightforward in terms of programming—requiring adjustments to the sample period—it demands careful economic interpretation of observed trends, market shifts, and potential structural changes that may influence the relationship between earnings announcements and stock returns.
 
 ## Research Design Choices and Assumptions {#sec-research_design_assumptions2}
+
+Assumptions from @sec-research_design_assumptions1 still hold 
+
 ## Replication Steps {#sec-replication_steps2}
 ## Results {#sec-results2}
 
@@ -202,6 +216,13 @@ This Section extends the analysis to 2007–2023, a period defined by major econ
 Task 3 extends the analysis beyond the United States by replicating Figure 1 using data from a non-U.S. market, providing insights into how earnings informativeness varies across different regulatory environments and market structures. This task requires mapping variables from CRSP/Compustat to their equivalents in Worldscope/Datastream, adjusting for differences in accounting standards, market liquidity, and institutional factors. While the core replication methodology remains the same, careful data handling and economic interpretation are crucial to account for cross-country differences.
 
 ## Research Design Choices and Assumptions {#sec-research_design_assumptions3}
+
+It is important to use same logic in defining event windows as in Task 1 to ensure consistency https://community.developers.refinitiv.com/discussion/106705/how-to-get-only-trading-days-in-datastream-data/p1?tab=accepted
+country-specific market calendars ?
+
+
+We need to check whether non-US databases (Worldscope/Datastream) use the same announcement date convention or if they report earnings by fiscal period.
+
 ## Replication Steps {#sec-replication_steps3}
 ## Results {#sec-results3}
 
