@@ -56,11 +56,9 @@ header-includes:
 **CQA**: Corporate Decision-Making and Quantitative Analysis  
 **DV**: Dependent Variable  
 **HU**: Humboldt-Universität zu Berlin  
-**IV**: Independent Variable  
-**EU**: European Union  ##  
 **IDE**: Integrated Development Environment  
+**IV**: Independent Variable  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
-**UK**: United Kingdom  ##  
 **US**:: United States  
 **WRDS**: Wharton Research Data Services  
 
