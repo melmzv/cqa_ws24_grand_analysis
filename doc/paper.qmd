@@ -59,7 +59,7 @@ header-includes:
 **IDE**: Integrated Development Environment  
 **IV**: Independent Variable  
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
-**US**:: United States  
+**US**: United States  
 **WRDS**: Wharton Research Data Services  
 
 \setlength{\parindent}{4em} 
