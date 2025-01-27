@@ -1,8 +1,9 @@
 # --- Header -------------------------------------------------------------------
 # See LICENSE file for details
 #
-# This code pulls data from WRDS Audit Analytics Database 
+# This code pulls data from WRDS Databases 
 # ------------------------------------------------------------------------------
+
 import os
 from getpass import getpass
 import dotenv
@@ -19,13 +20,25 @@ def main():
 
     This function reads the configuration file, gets the WRDS login credentials, and pulls the data from WRDS.
 
-    The data is then saved to a csv file.
+    The data is then saved to CSV and Parquet files.
     '''
     cfg = read_config('config/pull_data_cfg.yaml')
     wrds_login = get_wrds_login()
-    wrds_data = pull_wrds_data(cfg, wrds_login)
-    wrds_data.to_csv(cfg['audit_analytics_save_path'], index=False)
-
+    
+    # Pull CRSP and Compustat Data
+    db = wrds.Connection(
+        wrds_username=wrds_login['wrds_username'], 
+        wrds_password=wrds_login['wrds_password']
+    )
+    
+    log.info('Logged on to WRDS ...')
+    
+    pull_crsp_data(cfg, db)
+    pull_compustat_data(cfg, db)
+    pull_link_data(db)
+    
+    db.close()
+    log.info("Disconnected from WRDS")
 
 def get_wrds_login():
     '''
@@ -42,35 +55,44 @@ def get_wrds_login():
             'Please provide a WRDS password (it will not show as you type): ')
         return {'wrds_username': wrds_username, 'wrds_password': wrds_password}
 
-def pull_wrds_data(cfg, wrds_authentication):
-    '''
-    Pulls WRDS Audit Europe Transparency Report data.
-    '''
-    db = wrds.Connection(
-        wrds_username=wrds_authentication['wrds_username'], wrds_password=wrds_authentication['wrds_password']
-    )
+### LINKDATA Compustat/CRSP
+def pull_link_data(db):
+    log.info("Pulling link data Compustat/CRSP ...")
+    linkdata_df_wrds = db.get_table(library="crsp_a_ccm", table="ccmxpf_linktable")
+    linkdata_df_wrds.to_parquet("data/pulled/linkdata_compustat_crsp.parquet")
+    log.info("Pulling link data Compustat/CRSP... Done!")
 
-    log.info('Logged on to WRDS ...')
+### CRSP DATA
+def pull_crsp_data(cfg, db):
+    log.info("Pulling CRSP data ...")
+    
+    # Prepare crsp_filter and crsp_vars
+    crsp_vars = ', '.join(cfg['crsp_vars']) if cfg.get('crsp_vars') else "*"
+    crsp_filter = ' AND '.join(cfg['crsp_filter']) if cfg.get('crsp_filter') else '1=1'
+    
+    crsp_query = f"SELECT {crsp_vars} FROM crsp_a_stock.dsf WHERE {crsp_filter}"
+    log.info(f"Executing query: {crsp_query}")
+    
+    crsp_df_wrds = db.raw_sql(crsp_query)
+    crsp_df_wrds.to_parquet(cfg['crsp_save_path'])
+    
+    log.info("Pulling CRSP data ... Done!")
 
-    # Select only the required variables from Transparency Reports
-    selected_vars_str = ', '.join(cfg['selected_vars'])
-    # Apply filter for 2021 and specific countries
-    country_filter = ', '.join([f"'{country}'" for country in cfg['included_countries']])
-    query = f"""
-        SELECT {selected_vars_str}
-        FROM audit_europe.feed76_transparency_reports
-        WHERE REPORT_YEAR = 2021
-        AND TRANS_REPORT_AUDITOR_STATE IN ({country_filter})
-    """
-
-    log.info("Pulling Transparency Report data ... ")
-    wrds_data = db.raw_sql(query)
-    log.info("Pulling Transparency Report data ... Done!")
-
-    db.close()
-    log.info("Disconnected from WRDS")
-
-    return wrds_data
+### COMPUSTAT DATA
+def pull_compustat_data(cfg, db):
+    log.info("Pulling Compustat data ...")
+    
+    # Prepare fundq_filter and fundq_vars
+    fundq_vars = ', '.join(cfg['fundq_vars']) if cfg.get('fundq_vars') else "*"
+    fundq_filter = ' AND '.join(cfg['fundq_filter']) if cfg.get('fundq_filter') else '1=1'
+    
+    fundq_query = f"SELECT {fundq_vars} FROM comp_na_daily_all.fundq WHERE {fundq_filter}"
+    log.info(f"Executing query: {fundq_query}")
+    
+    fundq_df_wrds = db.raw_sql(fundq_query)
+    fundq_df_wrds.to_parquet(cfg['fundq_save_path'])
+    
+    log.info("Pulling Compustat data ... Done!")
 
 if __name__ == '__main__':
     main()

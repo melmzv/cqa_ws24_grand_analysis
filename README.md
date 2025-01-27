@@ -73,6 +73,8 @@ Assuming that you have WRDS access, Python, VS Code, Quarto, and `make` installe
 > - To access a database through WRDS, complete this [form](https://wrds-www.wharton.upenn.edu/register/) if you are not yet registered. Ensure that you create an account with your institutional (university) email. If you are from Humboldt-Universität zu Berlin, contact the University Library to get your account request approved. After setting up two-factor authentication (2FA) and accepting the terms of use, you will be ready to access WRDS databases.
 > - Please note that WRDS does not typically provide direct access to historical snapshots of databases. The data available through WRDS is usually the most current version. To access a specific historical version, contact the data vendor directly through [WRDS support](mailto:wrds@lseg.com?subject=[GitHub]%20Historical%20Data%20Access) to inquire about the possibility of accessing historical snapshots.
 
+> [!CAUTION]
+> As of [February 2025](https://wrds-www.wharton.upenn.edu/pages/data-announcements/changes-to-crsp-data/), CRSP transitions to Stock & Indexes Flat File Format 2.0 (CIZ), replacing the legacy Flat File Format 1.0 (SIZ). Users must update their code to accommodate new table and variable names to continue accessing updated data. Certain variables will be replaced, which should be taken into account for future reproducible research. :warning:
 
 1. Click on the `Use this template` button on the top right of the repository and choose `Create a new repository`. Provide the repository with a name, a description, and select whether it should be public or private. Then click `Create repository`.
 2. Clone the repository to your local machine. Open the repository in VS Code and launch a new terminal.

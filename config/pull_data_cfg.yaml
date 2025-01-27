@@ -1,44 +1,22 @@
-# Selected variables for pulling data based on requirements for Figure 3
-selected_vars:
-    - TRANSPARENCY_REPORT_FKEY       # Unique numeric identifier assigned by Audit Analytics to each Transparency Report. 
-    - ENTITY_MAP_FKEY                # Unique numeric identifier assigned to each entity by Audit Analytics.
-    - AUDITOR_FKEY                   # Unique numeric identifier assigned by Audit Analytics for each audit firm.
-    - TRANS_REPORT_AUDITOR_STATE     # Iso code of country Auditor is located in.
-    - AUDITOR_NETWORK                # Name of the auditor network, alliance, or association, where applicable, corresponding to Auditor Name or Auditor Affiliate Name (for grouping and filtration).
-    - REPORT_YEAR                    # Fiscal year of the Transparency Report, filtered for 2021 for replication.
-    - NUMBER_OF_DISCLOSED_PIES       # Number of PIE entities audited in each Transparency Report.
+# CRSP Daily Stock Data (Annual update)
+crsp_vars:
+  - permno # Unique Identifier to match
+  - date
+  - ret  # Daily return from CRSP, price (`PCR`) not used for simplicity
+crsp_filter: # As in Ball (2008)
+  - "date >= '1972-01-01'"
+  - "date <= '1972-12-31'"
+crsp_save_path: 'data/pulled/crsp_daily_stock_returns.parquet'
 
-# Filter countries as in Figure 3
-included_countries:
-    - 'DK'  # Denmark
-    - 'CY'  # Cyprus
-    - 'FI'  # Finland
-    - 'SE'  # Sweden
-    - 'LU'  # Luxembourg
-    - 'BE'  # Belgium
-    - 'EE'  # Estonia
-    - 'AT'  # Austria
-    - 'NO'  # Norway
-    - 'NL'  # Netherlands
-    - 'IT'  # Italy
-    - 'ES'  # Spain
-    - 'IE'  # Ireland
-    - 'DE'  # Germany
-    - 'MT'  # Malta
-    - 'LT'  # Lithuania
-    - 'HU'  # Hungary
-    - 'LV'  # Latvia
-    - 'CZ'  # Czech Republic
-    - 'HR'  # Croatia
-    - 'SI'  # Slovenia
-    - 'SK'  # Slovakia
-    - 'FR'  # France
-    - 'PL'  # Poland
-    - 'PT'  # Portugal
-    - 'GR'  # Greece
-    - 'RO'  # Romania
-    - 'BG'  # Bulgaria
-
-cs_filter: REPORT_YEAR=2021  # Only include records with REPORT_YEAR equal to fiscal year 2021
-
-audit_analytics_save_path: 'data/pulled/transparency_report_data_2021.csv'
+# Compustat Fundamentals - Quarterly (Daily Update)
+fundq_vars:
+  - gvkey # Unique Identifier to match
+  - datadate
+  - conm  # Company name
+  - tic  # Ticker symbol
+  - rdq  # Reported Date for Earnings Announcements - for Earnings Announcement Definition
+  - fyearq  # Fiscal Year of the Quarter 
+  - fqtr  # Fiscal Quarter
+  - fyr  # Fiscal Year-End Indicator
+fundq_filter: 
+fundq_save_path: 'data/pulled/compustat_fundq_1972_2023.parquet'

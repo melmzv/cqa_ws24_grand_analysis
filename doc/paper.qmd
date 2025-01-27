@@ -52,6 +52,7 @@ header-includes:
 
 # List of Abbreviations
 \setlength{\parindent}{0em}
+**BHR**: Buy-and-Hold Returns   
 **CRSP**: Center for Research in Security Prices  
 **CQA**: Corporate Decision-Making and Quantitative Analysis  
 **DV**: Dependent Variable  
@@ -84,6 +85,7 @@ The paper is structured into sections corresponding to Tasks 1–3 (@sec-task1, 
 # Task 1 - Replication of Key Tables and Figures {#sec-task1}
 Task 1 is the most comprehensive, replicating the methodology of key tables and figures from @ball_how_2008 using daily US stock return data (1972–2006) to establish baseline results, ensuring alignment with the original findings before extending the analysis in @sec-task2. By reconstructing Table 1 (Panel A), Table 2 (all panels), and Figure 1 (all panels), this task evaluates the robustness of the original results and identifies potential discrepancies, offering insights into data consistency, methodology, and market dynamics over the examined period. The use of daily CRSP data is essential for capturing short-term stock price movements around earnings announcements, ensuring precise event window calculations. The discussion of replication findings is presented in @sec-results1.
 
+
 ## Research Design Choices and Assumptions {#sec-research_design_assumptions1}
 Following @ball_how_2008, I focus the analysis on earnings announcements and stock returns from 1972 to 2006, ensuring that the data accurately reflects the original study’s methodology and findings. The replication aims to mirror the research design as closely as possible with the available data, maintaining consistency in sample selection, event window definitions, and return calculations.
 
@@ -95,27 +97,23 @@ In addition, I impose the following assumptions to ensure clarity and consistenc
 
 2. As in the original paper, firm-years are selected based on available stock return data in CRSP. While @ball_how_2008 restrict the sample to firms with at least 240 trading days per year, I follow the course guidance and do not apply this restriction, allowing for a slightly larger sample size. This adjustment should be considered when interpreting differences from the original study.
 
-3.
+3. Compustat includes both active and inactive firms, and the original study does not specify filtering based on firm activity. Thus, all firms meeting the sample selection criteria (i.e., four quarterly earnings announcements per year and available stock return data) are retained, regardless of their active status today. 
+
+4. For historical analysis on securities, permanent identifiers, such as `PERMNO`, `PERMCO`, and `GVKEY` are used that never change for the duration of the company’s life span regardless of the name changes and are never being reused [@gow_empirical_2025]. In this replication, variable `PERMNO` is used instead of `PERMCO` because it uniquely identifies individual securities rather than companies, ensuring that stock returns are accurately tracked at the security level. Since firms may have multiple share classes with distinct price movements, using `PERMNO` prevents aggregation issues that could arise with `PERMCO`, which groups all share classes under one identifier.
+
+5. The replication relies on Compustat and CRSP, linked via the CRSP/Compustat Merged (CCM) database, but with different update frequencies: Compustat (daily), CRSP (annually), and CCM (annually). Timing mismatches may arise, especially for firms with restated financials, leading to slight variations in event window alignment when calculating earnings-announcement returns. Unlike the original study, this replication uses the latest WRDS version available as of January 2025, meaning database updates may cause minor differences in firm coverage or reported values.
+
+6. Since @ball_how_2008 analyze returns, I use `RET` variable in CRSP too to simplify the process. Bid and ask prices are ignored. 
 
 By following the steps outlined in @sec-replication_steps1 and adhering to the assumptions made, I successfully replicated the results from @ball_how_2008. A thorough step-by-step approach, with each step clearly documented, helps to understand and verify the outputs.
 
-------
-
-1.	The original report references the reports prepared by national competent authorities (NCAs) responsible for audit oversight as the main source of data, where the data refers to the years 2020 and 2021 and was collected in 2022 [@EC_Report_2024, p.1]. However, this replication uses data obtained from the Audit Analytics Transparency Reports database via WRDS, which provides the latest available version as of September 2024, updated quarterly [@WRDS_Audit_Analytics_Transparency_Reports]. Due to potential adjustments and updates made to the database since the original data collection period, there may be differences that could affect the results. For example, audit firms may disclose updated information in subsequent reports, which would be reflected in the later database version rather than the historical snapshot used in the original report. Furthermore, the data vendor regularly updates its databases to correct errors and add new information, which may be included in the later data but not in the 2022 snapshot.
-
-5.	For the purpose of replicating Figure 3, I use the `report_year` variable as the primary filter to define the relevant data for year 2021. This choice is based on the fact that `report_year` represents the idealized fiscal year of the Transparency Report, based on the *Europe Transparency Reports Data Dictionary* by Wharton Research Data Services [-@Europe_Transparency_Reports_Data_Dictionary], which aligns directly with the year-based aggregation needed for Figure 3. While the `report_period_end_date` provides the exact end date of each reporting period [@Europe_Transparency_Reports_Data_Dictionary], using `report_year` allows for a consistent, annual aggregation without requiring additional alignment of various period end dates. This approach simplifies the data extraction and ensures that all entries correspond to the fiscal year 2021.
-Since the report does not specify the choice of variables used from the database, this could cause differences in the results.
 
 ## Replication Steps {#sec-replication_steps1}
-The analysis involves gathering and filtering Transparency Report data, identifying relevant PIEs and EU countries, and calculating the Big 4, CR4, and 10KAP market shares for each country as well as at the EU level.
-
-The replication process includes data loading, preparation, and cleaning, followed by the computation and visualization of market concentration measures. For Assignment I, I pulled data from the Audit Analytics database via WRDS and used the Python programming language to carry out the empirical analysis. Visual Studio Code was used as the Integrated Development Environment (IDE) for writing, debugging, and optimizing the Python code.
-
-CRSP/COMPUSTAT MERGED database allows for concurrent database access to CRSP’s stock data and Compustat’s fundamental data.
-
-The replication is based on data pulled from the Audit Analytics Transparency Reports database, specifically from `audit_europe.feed76_transparency_reports` table, which was filtered and aggregated for the analysis. The table offers Transparency Reports published annually by audit firms based in the EEA and Switzerland, along with the names of all entities listed in each audit firm’s Transparency Reports [@WRDS_Audit_Analytics_Transparency_Reports].
+The analysis involves gathering and filtering stock return and earnings announcement data, linking CRSP stock data with Compustat fundamentals, and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
 
 **Step 1: Pulling the Data and Managing the Databases**  
+Data is pulled from the `crsp_a_ccm.ccmxpf_lnkhist`, `crsp_a_stock.dsf`, `comp_na_daily_all.fundq` tables via WRDS, using Python for data processing and regression analysis and facilitating direct access to stock price and return data from CRSP alongside firm fundamentals from Compustat, enabling a seamless link between market and accounting data. Visual Studio Code was used as the Integrated Development Environment (IDE) for writing, debugging, and optimizing the Python code. While WRDS provides extensive financial datasets, documentation on precise variable selection and dataset integration is limited, requiring additional validation and cross-referencing with prior research.
+
 This Assignment involves pulling data directly from the Audit Analytics database and preparing the data for further analysis from raw data to final output.
 
 To ensure data relevance, the pulling process was restricted to data for the year 2021. The variable `trans_report_auditor_state` was used to filter the data to include only audit firms associated with the specific EU and EEA countries, as specified in configuration file `config/pull_data_cfg​`. This filtering step ensured that the analysis focuses on audit market concentration within the geographical scope and year range as defined by @EC_Report_2024.
@@ -144,6 +142,7 @@ $$
 $$
 
 The analysis also includes the creation of a bar chart visualizing market shares for all countries and the EU aggregate, saved in both PNG and pickle formats. The aggregated market share data is saved in CSV format, ensuring reproducibility and further analysis opportunities.
+
 
 ## Results {#sec-results1}
 Comparing the replication results of Figure 1 (see @fig-market-shares) with those from @ball_how_2008 (see Figure 1 below) reveals both similarities and discrepancies.
