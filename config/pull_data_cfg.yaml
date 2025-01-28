@@ -7,6 +7,7 @@ crsp_filter: # As in Ball (2008)
   - "date >= '1972-01-01'"
   - "date <= '2023-12-31'"
 crsp_save_path: 'data/pulled/crsp_daily_stock_returns.parquet'
+crsp_save_path_csv: 'data/pulled/crsp_daily_stock_returns.csv'
 
 # Compustat Fundamentals - Quarterly (Daily Update)
 fundq_vars:
@@ -20,3 +21,4 @@ fundq_vars:
   - fyr  # Fiscal Year-End Indicator
 fundq_filter: 
 fundq_save_path: 'data/pulled/compustat_fundq_1972_2023.parquet'
+fundq_save_path_csv: 'data/pulled/compustat_fundq_1972_2023.csv'

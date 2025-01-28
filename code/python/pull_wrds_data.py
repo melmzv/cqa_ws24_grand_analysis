@@ -75,7 +75,8 @@ def pull_crsp_data(cfg, db):
     
     crsp_df_wrds = db.raw_sql(crsp_query)
     crsp_df_wrds.to_parquet(cfg['crsp_save_path'])
-    
+    crsp_df_wrds.to_csv(cfg['crsp_save_path_csv'], index=False)
+
     log.info("Pulling CRSP data ... Done!")
 
 ### COMPUSTAT DATA
@@ -91,7 +92,8 @@ def pull_compustat_data(cfg, db):
     
     fundq_df_wrds = db.raw_sql(fundq_query)
     fundq_df_wrds.to_parquet(cfg['fundq_save_path'])
-    
+    fundq_df_wrds.to_csv(cfg['fundq_save_path_csv'], index=False)
+   
     log.info("Pulling Compustat data ... Done!")
 
 if __name__ == '__main__':
