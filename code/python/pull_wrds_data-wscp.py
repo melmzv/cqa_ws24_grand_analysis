@@ -65,37 +65,38 @@ def pull_wrds_data(cfg, wrds_authentication):
     log.info("Logged on to WRDS ...")
 
 
-    ## WORLDCSOPE DATA
-    log.info("Pulling Worldscope data ... ")
-    # Prepare wrds_ws_stock_vars and wrds_ws_stock_filter
-    if cfg.get( 'worldscope_vars'):
-        worldscope_vars = ', ' .join(cfg['worldscope_vars'])
-    else:
-        worldscope_vars = '*'
-    if cfg.get('worldscope_filter'):
-        worldscope_filter = ' AND ' .join(cfg['worldscope_filter'])
-    else:
-        worldscope_filter = '1=1'
 
-    worldscope_query = f"SELECT {worldscope_vars} FROM tr_worldscope.wrds_ws_stock WHERE {worldscope_filter}"
+    log.info("Pulling Worldscope data ... ") # Pull Worldscope Stock Data
+    # Prepare the variables and filters for the WRDS Worldscope stock data query
+    if cfg.get('wrds_ws_stock_vars'):
+        wrds_ws_stock_vars = ', '.join(cfg['wrds_ws_stock_vars'])
+    else:
+        wrds_ws_stock_vars = '*'
+    
+    if cfg.get('wrds_ws_stock_filter'):
+        wrds_ws_stock_filter = ' AND '.join(cfg['wrds_ws_stock_filter'])
+    else:
+        wrds_ws_stock_filter = '1=1' # To ensure the query is valid and can run even if no filters are specified.
+
+    worldscope_query = f"SELECT {wrds_ws_stock_vars} FROM tr_worldscope.wrds_ws_stock WHERE {wrds_ws_stock_filter}"
     log.info(f"Executing query: {worldscope_query}")
-    worldscope_df_wrds = db.raw_sql(worldscope_query)
+    worldscope_df = db.raw_sql(worldscope_query)
 
     log.info("Pulling Worldscope data ... Done!")
 
 
-    ## DATASTREAM DATA
-    log.info("Pulling Datastream data ... ")
 
-    # Prepare ds_vars and ds_filter
+    log.info("Pulling Datastream data ... ") # Pull Datastream Daily Data
+    # Prepare the variables and filters
     if cfg.get('ds_vars'):
-        worldscope_vars = ', ' .join(cfg['ds_vars'])
+        ds_vars = ', '.join(cfg['ds_vars'])
     else:
-        worldscope_vars = '*'
+        ds_vars = '*'
+    
     if cfg.get('ds_filter'):
-        worldscope_filter = ' AND ' .join(cfg['ds_filter'])
+        ds_filter = ' AND '.join(cfg['ds_filter'])
     else:
-        worldscope_filter = '1=1'
+        ds_filter = '1=1'
 
     ds_query = f"SELECT {ds_vars} FROM tr_ds_equities.wrds_ds2dsf WHERE {ds_filter}"
     log.info(f"Executing query: {ds_query}")
@@ -104,13 +105,13 @@ def pull_wrds_data(cfg, wrds_authentication):
     log.info("Pulling Datastream data ... Done!")
 
 
-    ## LINKDATA Worldscope/Datastream
-    log.info("Pulling link data Worldscope/Datastream... ")
-    link_ds_ws_df = db.get_table(library="wrdsapps_link_datastream_wscope", table="ds2ws_linktable")
+    log.info("Pulling link data Worldscope/Datastream... ") 
+    linkdata_df = db.get_table(library="wrdsapps_link_datastream_wscope", table="ds2ws_linktable") # Pull link Data
     log.info("Pulling link data Worldscope/Datastream... Done!")
 
     db.close()
     log.info("Disconnected from WRDS")
+
 
     return worldscope_df, ds_df, linkdata_df
 
