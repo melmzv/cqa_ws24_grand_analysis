@@ -55,6 +55,7 @@ header-includes:
 **BHR**: Buy-and-Hold Returns   
 **CRSP**: Center for Research in Security Prices  
 **CQA**: Corporate Decision-Making and Quantitative Analysis  
+**DS**: Datastream  
 **DV**: Dependent Variable  
 **HU**: Humboldt-Universität zu Berlin  
 **IDE**: Integrated Development Environment  
@@ -62,6 +63,7 @@ header-includes:
 **TREAT**: TRR 266 Template for Reproducible Empirical Accounting Research  
 **US**: United States  
 **WRDS**: Wharton Research Data Services  
+**WSCP**: Worldscope  
 
 \setlength{\parindent}{4em} 
 
@@ -70,7 +72,7 @@ header-includes:
 # Introduction {#sec-introduction}
 The aim of this paper is to illustrate the use of open science tools in empirical accounting research. This project builds on the methodological framework established in the Corporate Decision-Making and Quantitative Analysis (CQA) course, which explored a range of empirical research methods—including archival analysis, field experiments, and survey-based approaches—to develop a comprehensive understanding of corporate decision-making and quantitative analysis. Expanding on prior empirical research conducted in Assignments I and II, this paper extends the empirical focus of the course. Assignment I examined audit market concentration in the EU using Transparency Reports data, offering insights into the dominance of major audit firms and the structure of the European audit market. Assignment II explored the economic implications of corporate financial reporting, focusing on @graham_economic_2005 to analyze managerial decision-making, earnings management strategies, and voluntary disclosure practices. This study highlighted the trade-offs between short-term earnings predictability and long-term firm value and provided a foundation for understanding corporate incentives in financial reporting.
 
-Building on these foundations, Assignment III investigates the informativeness of quarterly earnings announcements and their contribution to annual share price movements. The project replicates and extends @ball_how_2008, assessing the extent to which earnings releases serve as a source of new information for financial markets. By integrating multiple datasets from WRDS and applying an event-study methodology, this study evaluates the economic role of earnings disclosures in market efficiency, showcasing the valuation purpose of accounting. At the same time, earnings reports may play a crucial role in contracting by influencing managerial compensation, debt agreements, and other contractual mechanisms tied to financial performance [@ball_how_2008]. The integration of multiple databases adds complexity, requiring a detailed understanding of their structures and careful scripting to extract, align, and analyze data effectively. Key tasks include replicating and comparing original results, extending the analysis to data from 2007–2023, and applying the methodology to a non-U.S. country to explore cross-market variations.
+Building on these foundations, Assignment III investigates the informativeness of quarterly earnings announcements and their contribution to annual share price movements. The project replicates and extends @ball_how_2008, assessing the extent to which earnings releases serve as a source of new information for financial markets. By integrating multiple datasets from WRDS and applying an event-study methodology, this study evaluates the economic role of earnings disclosures in market efficiency, showcasing the valuation purpose of accounting. At the same time, earnings reports may play a crucial role in contracting by influencing managerial compensation, debt agreements, and other contractual mechanisms tied to financial performance [@ball_how_2008]. The integration of multiple databases adds complexity, requiring a detailed understanding of their structures and careful scripting to extract, align, and analyze data effectively. Key tasks include replicating and comparing original results, extending the analysis to data from 2007–2023, and applying the methodology to Canada as a non-U.S. country to explore cross-market variations.
 
 Beyond empirical replication, the project also documents research design choices, replication steps, and explicit assumptions made whenever the original paper was unclear on how to proceed. It discusses variations between original and reproduced results and provides insights into the timeliness and market impact of earnings announcements across different timeframes and jurisdictions. Additionally, it sketches a research design for a non-archival study to evaluate the paper’s findings through an alternative methodological lens. This project leverages the TRR 266 Template for Reproducible Empirical Accounting Research (TREAT) to establish an open science-oriented infrastructure, ensuring transparency, replicability, and structured workflows for empirical accounting research.
 
@@ -80,7 +82,7 @@ Building on this foundation, the original study by @ball_how_2008 investigates t
 
 While @ball_how_2008 provide key insights into the informativeness of earnings announcements, their study was conducted within a specific timeframe and market context. Since then, financial markets have undergone significant changes due to regulatory reforms, economic crises, and technological advancements in financial information processing. Moreover, the extent to which earnings informativeness varies across international markets remains underexplored. By replicating their study with updated data from 2007–2023 and applying the methodology to a non-U.S. country, this project reassesses the robustness of their findings, examines long-term trends, and evaluates cross-country differences in earnings informativeness. Through this approach, it critically evaluates the generalizability of the original results and provides further insights into the economic role of earnings announcements in financial markets, offering a contemporary perspective on their evolving informativeness and implications for investors, analysts, and policymakers.
 
-The paper is structured into sections corresponding to Tasks 1–3 (@sec-task1, @sec-task2, @sec-task3), each detailing the research design choices and assumptions, documenting the replication steps, and analyzing the replication results for the respective segment. @sec-task1 follows an exact replication approach by replicating key tables and figures from the original study using US data (1972–2006) to establish baseline results. @sec-task2 extends the analysis through empirical generalization, applying the same methodology to 2007–2023 US data to compare how results evolve over time. @sec-task3 employs a generalization and extension approach by applying the methodology to a non-US country, requiring adjustments for different databases and market structures. This framework aligns with the replication taxonomy outlined by @salterio_replication_2022. Finally, @sec-task4 sketches the survey design as a non-archival study that allows evaluating the key findings of the seminal paper, following Bloomfield’s (2016) triangulation principle. The concluding remarks are provided in @sec-conclusion.  The entire Python computation code for return calculations is available in `code/python/do_analysis.py` for detailed review if necessary. This paper focuses on the replication process, presenting visualizations, and discussing the results.
+The paper is structured into sections corresponding to Tasks 1–3 (@sec-task1, @sec-task2, @sec-task3), each detailing the research design choices and assumptions, documenting the replication steps, and analyzing the replication results for the respective segment. @sec-task1 follows an exact replication approach by replicating key tables and figures from the original study using US data (1972–2006) to establish baseline results. @sec-task2 extends the analysis through empirical generalization, applying the same methodology to 2007–2023 US data to compare how results evolve over time. @sec-task3 employs a generalization and extension approach by applying the methodology to a non-US country, requiring adjustments for different databases and market structures. This framework aligns with the replication taxonomy outlined by @salterio_replication_2022. Finally, @sec-task4 sketches the survey design as a non-archival study that allows evaluating the key findings of the seminal paper, following Bloomfield’s (2016) triangulation principle. The concluding remarks are provided in @sec-conclusion.  The entire Python computation code for regression run is available in `code/python/do_analysis.py` and `code/python/do_analysis-wscp.py` for detailed review if necessary. This paper focuses on the replication process, presenting visualizations, and discussing the results.
 
 # Task 1 - Replication of Key Tables and Figures {#sec-task1}
 Task 1 is the most comprehensive, replicating the methodology of key tables and figures from @ball_how_2008 using daily US stock return data (1972–2006) to establish baseline results, ensuring alignment with the original findings before extending the analysis in @sec-task2. By reconstructing Table 1 (Panel A), Table 2 (all panels), and Figure 1 (all panels), this task evaluates the robustness of the original results and identifies potential discrepancies, offering insights into data consistency, methodology, and market dynamics over the examined period. The use of daily CRSP data is essential for capturing short-term stock price movements around earnings announcements, ensuring precise event window calculations. The discussion of replication findings is presented in @sec-results1.
@@ -105,11 +107,13 @@ In addition, I impose the following assumptions to ensure clarity and consistenc
 
 6. Since @ball_how_2008 analyze returns, I use `RET` variable in CRSP too to simplify the process. Bid and ask prices are ignored. 
 
+7. Same as @ball_how_2008, I group earnings announcements based on their actual announcement dates (`RDQ` from Compustat) rather than the fiscal periods they cover. Since Compustat provides the precise earnings announcement date and CRSP aligns stock returns with trading days (`date` in CRSP), this approach ensures consistency. So, no adjustments are made to realign quarters.
+
 By following the steps outlined in @sec-replication_steps1 and adhering to the assumptions made, I successfully replicated the results from @ball_how_2008. A thorough step-by-step approach, with each step clearly documented, helps to understand and verify the outputs.
 
 
 ## Replication Steps {#sec-replication_steps1}
-The analysis involves gathering and filtering stock return and earnings announcement data, linking CRSP stock data with Compustat fundamentals, and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
+The analysis involves gathering and filtering stock return and earnings announcement data, linking CRSP stock data with Compustat firm-level accounting data fundamentals, and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
 
 **Step 1: Pulling the Data and Managing the Databases**  
 Data is pulled from the `crsp_a_ccm.ccmxpf_lnkhist`, `crsp_a_stock.dsf`, `comp_na_daily_all.fundq` tables via WRDS, using Python for data processing and regression analysis and facilitating direct access to stock price and return data from CRSP alongside firm fundamentals from Compustat, enabling a seamless link between market and accounting data. Visual Studio Code was used as the Integrated Development Environment (IDE) for writing, debugging, and optimizing the Python code. While WRDS provides extensive financial datasets, documentation on precise variable selection and dataset integration is limited, requiring additional validation and cross-referencing with prior research.
@@ -136,6 +140,8 @@ These preparation steps ensured alignment with the methodology of @EC_Report_202
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
 The analysis step computes market concentration metrics for audit firms across EU countries and at the EU level using the prepared transparency data. The analysis begins by calculating the market shares of the Big 4, 10KAP, and CR4 audit firm groups for the number of statutory audits conducted in 2021. For each country, the Big 4 market share is derived as the percentage of PIE statutory audits conducted by Deloitte, EY, KPMG, and PwC, while the CR4 market share represents the top four audit firms in each country based on audit counts. The 10KAP market share includes the Big 4 along with six additional networks, providing a broader view of market concentration.
 
+Since @ball_how_2008 do not explicitly describe their return computation, I compute Buy-and-Hold Returns (BHR) following the cumulative return formula as discussed in @gundersen_returns_2022. The BHR formula captures compounded returns over multiple days, reflecting the stock’s actual performance.
+
 The following formula is used to calculate market share:
 $$
 \text{Market Share (\%)} = \left( \frac{\text{Number of PIE Audits by Network Group}}{\text{Total PIE Audits in Country}} \right) \times 100
@@ -145,36 +151,34 @@ The analysis also includes the creation of a bar chart visualizing market shares
 
 
 ## Results {#sec-results1}
-Comparing the replication results of Figure 1 (see @fig-market-shares) with those from @ball_how_2008 (see Figure 1 below) reveals both similarities and discrepancies.
+Comparing the replication results of Figure 1 (see @fig-market-shares) with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies. 
 
 ```{python}
+#| label: fig-fig1_original
+#| fig-cap: "Original Figure 1 from Ball and Shivakumar (2008)"
+#| echo: false
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+img = mpimg.imread("fig1_original.png")
+plt.figure(figsize=(12, 20))
+plt.imshow(img)
+plt.axis("off")
+plt.show()
+
+# used in AssI Solution, I use knitr for availability of cross-referencing.
 #| label: fig1_original_png
 #| fig-cap: "Original Figure 1 from Ball and Shivakumar (2008)"
 #| echo: false
 
-from IPython.display import Image
+#from IPython.display import Image
 
-Image(filename="fig1_original.png")
+#Image(filename="fig1_original.png")
+#
 ```
 
 @fig-market-shares illustrates the... Countries are sorted in a specific order reflecting the replication of Figure 3 from the European Commission’s 2024 report. 
-```{python}
-#| label: fig-market-shares
-#| fig-cap: "Replicated Figure 3: Audit Firms' Market Shares in the EU for 2021"
-#| fig-align: center
-#| echo: false
-
-import pickle
-import matplotlib.pyplot as plt
-
-# Load the figure from the pickle file
-with open('../output/figure3_market_shares.pickle', 'rb') as f:
-    fig = pickle.load(f)
-
-# Render the figure explicitly
-plt.figure(fig.number)
-plt.show()
-```
 
 To verify the results of analysis step and observe trends before plotting, I have additionally saved the CSV output in `aggregated_market_shares.csv`. The analysis of market shares for statutory audits across European countries reveals distinct patterns of market concentration and auditor dominance. Big 4 firms exhibit a significant presence, often commanding a dominant share in many countries. For example, countries such as the Czech Republic, Estonia, and Finland demonstrate Big 4 market shares exceeding 95%, reflecting the significant influence of these firms in specific markets. However, the extent of this dominance varies, with lower Big 4 shares observed in countries like Bulgaria (17.5%) and Greece (43.6%), indicating a more diversified audit market in these regions. The analysis reveals that the Big 4 hold a market share exceeding 80% in 11 EU countries. This aligns with rthe finding of @EC_Report_2024, which similarly highlights that the Big 4 dominate over 80% of the market share in 11 Member States.
 
@@ -189,33 +193,58 @@ Based on the results for Austria, the Big 4 market share is 86.7% in my analysis
 The results for Romania show notable discrepancies. The EC Report indicates market shares of 15% for the Big 4, 16% for CR4, and 24% for 10KAP, while my analysis reports significantly higher values: 63%, 70.61%, and 78.38%, respectively. These differences likely arise from assumptions made in @sec-research_design_assumptions like variations in PIE definitions and auditor classifications. The report by @EC_Report_2024 may use stricter criteria, reflecting Romania’s decentralized market where non-Big 4 firms dominate, unlike the broader inclusion in my dataset. 
 
 In summary, the replication effectively captures the original report's key findings, confirming the dominance of the Big 4 and the broader 10KAP group in the European audit market. The analysis highlights varying degrees of market concentration across countries, with some demonstrating a more decentralized audit landscape. While discrepancies in individual country results, such as Romania, underline the importance of methodological alignment, the strong similarity between the overall market shares reported in the original report and the replicated results underscores the robustness and reliability of the findings.
-##we confirm? "The results are consistent with the view that the primary economic role of reported earnings is not to provide timely new information to the share market. By inference, that role lies elsewhere, for example, in settling debt and compensation contracts and in disciplining prior information,including more timely managerial disclosures of information originating in the firm’s accounting system. The comparatively low “surprise” content of earnings announcements is to be expected, for a variety of reasons. By its nature, accounting earnings is low frequency (quarterly), not discretionary (announced every quarter, independent of whether there is substantial new information to report), and primarily backward-looking. Other information, and hence revision in share price, is comparatively high frequency, frequently discretionary (released only when there is substantial information to report), and both forward-looking and backward-looking."
+qqq we confirm? "The results are consistent with the view that the primary economic role of reported earnings is not to provide timely new information to the share market. By inference, that role lies elsewhere, for example, in settling debt and compensation contracts and in disciplining prior information,including more timely managerial disclosures of information originating in the firm’s accounting system. The comparatively low “surprise” content of earnings announcements is to be expected, for a variety of reasons. By its nature, accounting earnings is low frequency (quarterly), not discretionary (announced every quarter, independent of whether there is substantial new information to report), and primarily backward-looking. Other information, and hence revision in share price, is comparatively high frequency, frequently discretionary (released only when there is substantial information to report), and both forward-looking and backward-looking."
 
 # Task 2 - Extending the Analysis to 2007–2023 {#sec-task2}
-
-This Section extends the analysis to 2007–2023, a period defined by major economic events such as the 2008 financial crisis and the COVID-19 pandemic, which may have influenced the informativeness of earnings announcements. While the task is relatively straightforward in terms of programming—requiring adjustments to the sample period—it demands careful economic interpretation of observed trends, market shifts, and potential structural changes that may influence the relationship between earnings announcements and stock returns.
+This Section extends the analysis to 2007–2023, a period defined by major economic events such as the 2008 financial crisis and the COVID-19 pandemic, which may have influenced the informativeness of earnings announcements. While the task is relatively straightforward in terms of programming—requiring adjustments to the sample period—it demands careful economic interpretation of observed trends, market shifts, and potential institutional details that may influence the relationship between earnings announcements and stock returns.
 
 ## Research Design Choices and Assumptions {#sec-research_design_assumptions2}
 
-Assumptions from @sec-research_design_assumptions1 still hold 
+Assumptions from @sec-research_design_assumptions1 still hold. 
 
 ## Replication Steps {#sec-replication_steps2}
 ## Results {#sec-results2}
 
 # Task 3 - Cross-Country Replication {#sec-task3}
-
-Task 3 extends the analysis beyond the United States by replicating Figure 1 using data from a non-U.S. market, providing insights into how earnings informativeness varies across different regulatory environments and market structures. This task requires mapping variables from CRSP/Compustat to their equivalents in Worldscope/Datastream, adjusting for differences in accounting standards, market liquidity, and institutional factors. While the core replication methodology remains the same, careful data handling and economic interpretation are crucial to account for cross-country differences.
+Task 3 extends the analysis beyond the United States by replicating Figure 1 using 1972-2023 data (if entire data range pull possible) from a non-U.S. market, providing insights into how earnings informativeness varies across different regulatory environments and market structures. This task requires mapping variables from CRSP/Compustat to their equivalents in Worldscope/Datastream, adjusting for differences in accounting standards, market liquidity, and institutional factors. Worldscope (Thomson/Refinitiv) serves as the international alternative of Compustat for earnings announcement data, while Datastream provides stock market data for non-U.S. companies. While the core replication methodology remains the same, careful data handling and economic interpretation are crucial to account for cross-country analysis with Canada.
 
 ## Research Design Choices and Assumptions {#sec-research_design_assumptions3}
+Since this task employs a generalization and extension approach by applying the same methodology to a country different from original report, it requires adjustments for different databases and market structures. Based on the original paper, I do not gather analyst expectations or estimate earnings deviations for my replication. Instead, I only require stock return data and earnings announcement dates.
 
-It is important to use same logic in defining event windows as in Task 1 to ensure consistency https://community.developers.refinitiv.com/discussion/106705/how-to-get-only-trading-days-in-datastream-data/p1?tab=accepted
-country-specific market calendars ?
+Canada as the country of choice was influenced by the alignment with the methodology of @ball_how_2008, where the key factor in the selection was the availability of quarterly earnings reports, which ensures comparability with U.S. data. For Canada, the reporting frequency is majority 4x, with some 2x, similar to the US [@short_short_2025]. While Canada has a smaller market size than the U.S., its regulatory environment, reporting frequency, and institutional settings are highly comparable, making it an optimal choice for the non-U.S. analysis. Additionally, Canada features a developed capital market with high trading volume and liquidity, ensuring that stock price reactions to earnings announcements are observable in the replication. A further advantage is that Canadian firms registered with the U.S. Securities and Exchange Commission (SEC) can report under U.S. GAAP, making their financial disclosures fully compatible with U.S. firms. This reduces methodological differences to the original study. 
 
+In addition, I impose the following assumptions apart from those listed in @sec-research_design_assumptions1 to ensure generalization and extension approach due to usage of other databases or where @ball_how_2008 do not provide explicit guidance:
 
-We need to check whether non-US databases (Worldscope/Datastream) use the same announcement date convention or if they report earnings by fiscal period.
+1. To ensure a smooth and conflict-free process, I handle the WSCP/Datastream workflow separately, preventing potential interference with the CRSP/Compustat pull process and improving debugging efficiency. Although a unified pull/prepare/do_analysis file for all databases would be ideal and streamline management, the large-scale nature of the extracted datasets is chosen for modular approach. Therefore, I isolate the data pull for @sec-task3 into `pull_wrds_data-wscp`, thus reducing complicated dependencies across tasks. To maintain structural consistency, I implement same approach for subsequent steps, including data preparation and analysis.
+
+2. Since I do not perform subgroup analysis for December and non-December fiscal year end firms as in Table 2 Panels C-D, `item5350` for FISCAL PERIOD END DATE is not relevant for this task, as Figure 1 applies to the analysis of the entire dataset. So, the sample is all firm-years with available data on the quarterly Worlscope and daily Datastream files.
+
+3. I verified whether Worldscope and Datastream follow the same earnings announcement date convention as Compustat or if they report earnings based on fiscal periods. I decided to use Worldscope items 5901–5904 from historical stock-related data in `wrds_ws_stock`, which represent the actual date when a company publicly reports its earnings for each quarter, where, however, data for these fields is generally not available prior to 1992. [@thomson_financial_worldscope_2007, p.281]. This may cause limited data sample size. 
+
+4. This task is a generalization to a non-U.S. setting, meaning methodological differences will certainly arise due to variations in data structure and reporting standards. Worldscope - Stock Data `wrds_ws_stock` table is updated quarterly, while Datastream Daily Stock File `wrds_ds2dsf` is updated weekly, which may introduce timing mismatches when aligning financial fundamentals with stock returns. Given that, future applications should consider database updates and coverage differences between CRSP and Datastream.
+
+5. Similar to @sec-task1, I use returns `ret` variable in Datastream to simplify the process, presented as percentage change. Bid and ask prices are ignored. 
+
+6. I ignore the currency effect (CAD or USD) in DS table, as returns are measured in percentages, making them relative rather than absolute values.
+
 
 ## Replication Steps {#sec-replication_steps3}
+Same as in @sec-task1 the analysis involves gathering and filtering stock return and earnings announcement data, linking Datastream stock data with WSCP (Worldscope), and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
+
+**Step 1: Pulling the Data and Managing the Databases**  
+I follow the linking approach between Worldscope and Datastream based on @dai_research_2021. The original study uses data from 1972 onward, while Worldscope's `year_` variable only provides data starting from 1980 [@wharton_research_data_services_worldscope_2025]. This constraint may lead to differences in sample coverage. Hence, filter Datastream `marketdate` to 1980 to prevent mismatched observations where stock data exists but earnings do not. 
+
+The data pull step retrieves quarterly earnings announcement dates from Worldscope and daily stock returns from Datastream, filtering for Canadian firms from 1980 onward. The datasets are saved separately and later merged using firm-level identifiers. Only common equity (`typecode` = EQ) is included to ensure consistency with CRSP.
+
+**Step 2: Data Preparation**  
+If a firm has missing values for any of the Earnings Per Share Report Date fields (`item5901`–`item5904`), it does not meet the criteria set by @ball_how_2008 and was excluded from the sample.
+
+**Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
+
 ## Results {#sec-results3}
+Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
+
+qqq Comparing the replication results from Task 1&2 (see @ and @) with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
 
 # Task 4 - Research Design for a Non-Archival Study {#sec-task4}
 
@@ -272,7 +301,7 @@ To deepen findings, selected participants will be invited for confidential follo
 # Conclusion {#sec-conclusion}
 This project effectively demonstrates the use of a systematic and collaborative workflow for empirical accounting research, leveraging the TRR 266 Template for Reproducible Empirical Accounting Research. By following an open science approach, I successfully replicated key tables and figures from @ball_how_2008, providing insights into how earnings announcements contribute to price formation and market efficiency. While exact replications often yield different samples and outcomes due to dataset updates or methodological variations, my results align closely with the statistics presented in the original study, reinforcing the reliability of the replication process. Moreover, by extending the analysis beyond the original study’s U.S. market focus, the project highlights how market structures and investor behaviors influence the informativeness of earnings disclosures in different jurisdictions.
 
-The study contributes to the ongoing discussion on market efficiency and the economic role of corporate disclosures by providing empirical evidence on how earnings informativeness has evolved over time and across jurisdictions. The cross-country analysis highlights variations in market responses to earnings announcements, suggesting that institutional factors, market structures, and investor behavior play a role in shaping how financial information is processed. These findings have implications for investors, analysts, and policymakers, as they underscore the importance of regulatory consistency and market transparency in shaping the effectiveness of financial reporting.
+The study contributes to the ongoing discussion on market efficiency and the economic role of corporate disclosures by providing empirical evidence on how earnings informativeness has evolved over time and across jurisdictions. The cross-country analysis with Canada highlights variations in market responses to earnings announcements, suggesting that institutional factors, market structures, and investor behavior play a role in shaping how financial information is processed. These findings have implications for investors, analysts, and policymakers, as they underscore the importance of regulatory consistency and market transparency in shaping the effectiveness of financial reporting.
 
 This assignment required a comprehensive application of programming skills and institutional knowledge gained throughout the course, integrating data analysis, replication, and visualization techniques in line with open science principles. In the future, this repository can be cloned or forked (if made public) to facilitate further research on earnings informativeness, enabling additional extensions or robustness tests. Additionally, the survey developed as part of the non-archival study proposal can be further refined and expanded, providing a structured framework for gathering primary data on market participants’ interpretations of earnings announcements. Through this approach, the study not only revisits a fundamental question in financial research but also provides a foundation for future empirical investigations into the evolving role of earnings announcements in global capital markets, both through archival and non-archival methodologies. Thanks for reading!
 
