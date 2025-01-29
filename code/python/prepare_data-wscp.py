@@ -104,12 +104,20 @@ def filter_valid_earnings(df):
     after_2023_check = len(df_filtered)
     log.info(f"Dropped {after_year_check - after_2023_check} rows due to earnings announcements beyond 2023.")
 
+    # Count NaN values in the 'ret' column before replacing them
+    nan_count = df_filtered['ret'].isna().sum()
+    # Replace NaN values in the 'ret' column with 0
+    df_filtered['ret'] = df_filtered['ret'].fillna(0)
+    log.info(f"Replaced {nan_count} NaN values in 'ret' column with 0.")
+
     # Drop the temporary year columns
     df_filtered = df_filtered.drop(columns=['year_5901', 'year_5902', 'year_5903', 'year_5904'])
 
     log.info(f"Final dataset size after filtering: {len(df_filtered)}")
 
     return df_filtered
+
+
 
 
 if __name__ == "__main__":
