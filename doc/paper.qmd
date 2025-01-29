@@ -241,9 +241,10 @@ The pull step results into three comprehensive datasets: DS table with 27,950,01
 **Step 2: Data Preparation**  
 First, I merged Worldscope stock data with the linking table using `code` as unique identifier, resulting in 747,760 observations. This merged dataset was then joined with Datastream daily stock data using `infocode`, producing a final dataset with 10,249,737 observations.
 
-If a firm has missing values for any of the Earnings Per Share Report Date fields (`item5901`–`item5904`), it does not meet the criteria set by @ball_how_2008 and was excluded from the sample.
+If a firm had missing values for any of the Earnings Per Share Report Date fields (item5901–item5904), it did not meet the criteria set by @ball_how_2008 and was excluded from the sample. This filtering step removed 3,609,492 firm-year observations. Additionally, 5,996,793 firm-year entries were dropped because their four earnings announcements did not fall within the same calendar year. The final dataset consists of only 643,452 valid firm-year observations, starting in 1996 only, signaling the potential difference in the acocunting standards between the U.S. and Canada.
 
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
+
 
 ## Results {#sec-results3}
 Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.

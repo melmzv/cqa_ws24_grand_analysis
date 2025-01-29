@@ -69,16 +69,25 @@ def filter_valid_earnings(df):
     initial_count = len(df)
 
     # Drop rows where any of the quarterly earnings announcement dates are missing
-    df_filtered = df.dropna(subset=['item5901', 'item5902', 'item5903', 'item5904'])
+    df_filtered = df.dropna(subset=['item5901', 'item5902', 'item5903', 'item5904']).copy()
     after_na_drop = len(df_filtered)
     log.info(f"Dropped {initial_count - after_na_drop} rows due to missing earnings announcement dates.")
 
-    # Ensure all four announcements fall within the same calendar year
-    df_filtered['year_5901'] = pd.to_datetime(df_filtered['item5901']).dt.year
-    df_filtered['year_5902'] = pd.to_datetime(df_filtered['item5902']).dt.year
-    df_filtered['year_5903'] = pd.to_datetime(df_filtered['item5903']).dt.year
-    df_filtered['year_5904'] = pd.to_datetime(df_filtered['item5904']).dt.year
+    # Convert date columns to string first (prevents issues with mixed types)
+    date_columns = ['item5901', 'item5902', 'item5903', 'item5904']
+    df_filtered[date_columns] = df_filtered[date_columns].astype(str)
 
+    # Convert date columns to datetime (with error handling)
+    for col in date_columns:
+        df_filtered[col] = pd.to_datetime(df_filtered[col], format="%m/%d/%y", errors='coerce')
+
+    # Extract year from each earnings announcement
+    df_filtered['year_5901'] = df_filtered['item5901'].dt.year
+    df_filtered['year_5902'] = df_filtered['item5902'].dt.year
+    df_filtered['year_5903'] = df_filtered['item5903'].dt.year
+    df_filtered['year_5904'] = df_filtered['item5904'].dt.year
+
+    # Ensure all four announcements fall within the same calendar year
     df_filtered = df_filtered[
         (df_filtered['year_5901'] == df_filtered['year_5902']) &
         (df_filtered['year_5901'] == df_filtered['year_5903']) &
