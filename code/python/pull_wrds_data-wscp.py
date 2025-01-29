@@ -1,12 +1,11 @@
 # --- Header -------------------------------------------------------------------
 # See LICENSE file for details
 #
-# This code pulls data from WRDS Worldscope Database
+# This code pulls data from WRDS Worldscope and Datastream Databases
 # ------------------------------------------------------------------------------
 import os
 from getpass import getpass
 import dotenv
-
 import pandas as pd
 from utils import read_config, setup_logging
 import wrds
@@ -14,85 +13,107 @@ import wrds
 log = setup_logging()
 
 def main():
-    '''
+    """
     Main function to pull data from WRDS.
 
-    This function reads the configuration file, gets the WRDS login credentials, and pulls the data from WRDS.
+    This function reads the configuration file, gets the WRDS login credentials, 
+    and pulls the data from WRDS.
 
-    The data is then saved to a csv file.
-    '''
+    The data is then saved to CSV and Parquet files.
+    """
     cfg = read_config('config/pull_data_cfg.yaml')
     wrds_login = get_wrds_login()
-    wrds_data = pull_wrds_data(cfg, wrds_login)
-    wrds_data.to_csv(cfg['worldscope_sample_save_path'], index=False)
+    
+    # Pull data from WRDS
+    worldscope_df, ds_df, linkdata_df = pull_wrds_data(cfg, wrds_login)
+
+    # Save pulled data
+    worldscope_df.to_csv(cfg['worldscope_sample_save_path_csv'], index=False)
+    worldscope_df.to_parquet(cfg['worldscope_sample_save_path'], index=False)
+
+    ds_df.to_csv(cfg['datastream_sample_save_path_csv'], index=False)
+    ds_df.to_parquet(cfg['datastream_sample_save_path'], index=False)
+
+    linkdata_df.to_csv(cfg['link_ds_ws_save_path_csv'], index=False)
+    linkdata_df.to_parquet(cfg['link_ds_ws_save_path'], index=False)
 
 
 def get_wrds_login():
-    '''
+    """
     Gets the WRDS login credentials.
-    '''
+    """
     if os.path.exists('secrets.env'):
         dotenv.load_dotenv('secrets.env')
         wrds_username = os.getenv('WRDS_USERNAME')
         wrds_password = os.getenv('WRDS_PASSWORD')
-        return {'wrds_username': wrds_username, 'wrds_password': wrds_password}
     else:
-        wrds_username = input('Please provide a wrds username: ')
-        wrds_password = getpass(
-            'Please provide a wrds password (it will not show as you type): ')
-        return {'wrds_username': wrds_username, 'wrds_password': wrds_password}
+        wrds_username = input("Please provide a WRDS username: ")
+        wrds_password = getpass("Please provide a WRDS password (it will not show as you type): ")
+
+    return {'wrds_username': wrds_username, 'wrds_password': wrds_password}
+
 
 def pull_wrds_data(cfg, wrds_authentication):
-    '''
-    Pulls WRDS access data.
-    '''
+    """
+    Pulls data from WRDS (Worldscope, Datastream, and linking table).
+    """
     db = wrds.Connection(
-        wrds_username=wrds_authentication['wrds_username'], wrds_password=wrds_authentication['wrds_password']
+        wrds_username=wrds_authentication['wrds_username'], 
+        wrds_password=wrds_authentication['wrds_password']
     )
+    
+    log.info("Logged on to WRDS ...")
 
-    log.info('Logged on to WRDS ...')
 
-    dyn_var_str = ', '.join(cfg['dyn_vars'])
-    stat_var_str = ', '.join(cfg['stat_vars'])
+    ## WORLDCSOPE DATA
+    log.info("Pulling Worldscope data ... ")
+    # Prepare wrds_ws_stock_vars and wrds_ws_stock_filter
+    if cfg.get( 'worldscope_vars'):
+        worldscope_vars = ', ' .join(cfg['worldscope_vars'])
+    else:
+        worldscope_vars = '*'
+    if cfg.get('worldscope_filter'):
+        worldscope_filter = ' AND ' .join(cfg['worldscope_filter'])
+    else:
+        worldscope_filter = '1=1'
 
-    log.info("Pulling dynamic Worldscope data ... ")
-    wrds_data_dynamic = db.raw_sql(
-        f"SELECT {dyn_var_str} FROM tr_worldscope.wrds_ws_funda WHERE {cfg['cs_filter']}"
-    )
-    log.info("Pulling dynamic Worldscope data ... Done!")
+    worldscope_query = f"SELECT {worldscope_vars} FROM tr_worldscope.wrds_ws_stock WHERE {worldscope_filter}"
+    log.info(f"Executing query: {worldscope_query}")
+    worldscope_df_wrds = db.raw_sql(worldscope_query)
 
-    log.info("Pulling static Worldscope data ... ")
-    wrds_data_static = db.raw_sql(f"SELECT {stat_var_str} FROM tr_worldscope.wrds_ws_company")
-    log.info("Pulling static Worldscope data ... Done!")
+    log.info("Pulling Worldscope data ... Done!")
+
+
+    ## DATASTREAM DATA
+    log.info("Pulling Datastream data ... ")
+
+    # Prepare ds_vars and ds_filter
+    if cfg.get('ds_vars'):
+        worldscope_vars = ', ' .join(cfg['ds_vars'])
+    else:
+        worldscope_vars = '*'
+    if cfg.get('ds_filter'):
+        worldscope_filter = ' AND ' .join(cfg['ds_filter'])
+    else:
+        worldscope_filter = '1=1'
+
+    ds_query = f"SELECT {ds_vars} FROM tr_ds_equities.wrds_ds2dsf WHERE {ds_filter}"
+    log.info(f"Executing query: {ds_query}")
+    ds_df = db.raw_sql(ds_query)
+
+    log.info("Pulling Datastream data ... Done!")
+
+
+    ## LINKDATA Worldscope/Datastream
+    log.info("Pulling link data Worldscope/Datastream... ")
+    link_ds_ws_df = db.get_table(library="wrdsapps_link_datastream_wscope", table="ds2ws_linktable")
+    log.info("Pulling link data Worldscope/Datastream... Done!")
 
     db.close()
     log.info("Disconnected from WRDS")
 
-    # Display the number of rows with empty item6105 before filtering
-    log.info(f"Rows with empty item6105 in dynamic data before filtering: {wrds_data_dynamic['item6105'].isna().sum()}")
-    log.info(f"Rows with empty item6105 in static data before filtering: {wrds_data_static['item6105'].isna().sum()}")
+    return worldscope_df, ds_df, linkdata_df
 
-    # Filter out rows with empty item6105 in both dynamic and static datasets, because this unique identifier is crucial 
-    # for further data preparation step when we filter on firm/year observations
-    wrds_data_dynamic = wrds_data_dynamic.dropna(subset=['item6105'])
-    wrds_data_static = wrds_data_static.dropna(subset=['item6105'])
-
-    # Merge the static and dynamic data to create one single data set by the unique item6105 (Worldscope Permanent ID)
-    wrds_data = pd.merge(wrds_data_dynamic, wrds_data_static, on='item6105', how='inner')
-
-    # Apply the filter for entity type to select only company rows in merged data based on Worldscope-specific Identifier advice
-    # to retrieve only companies and drop average, exchange rate, ADR, security or a stock index.
-    wrds_data = wrds_data[wrds_data['item6100'] == 'C']
-
-    # Filter out financial institutions using SIC code as required by paper
-    wrds_data = wrds_data.dropna(subset=['item7021'])
-    wrds_data = wrds_data[(wrds_data['item7021'].astype(int) < 6000) | (wrds_data['item7021'].astype(int) > 6999)]
-
-    # Apply the filter for specified countries given in the paper
-    wrds_data = wrds_data[wrds_data['item6026'].isin(cfg['included_countries']) & ~wrds_data['item6026'].isin(cfg['excluded_countries'])]
-
-
-    return wrds_data
 
 if __name__ == '__main__':
     main()

@@ -36,7 +36,7 @@ wrds_ws_stock_vars:
   - item5902 # EARNINGS PER SHARE - REPORT DATE - QUARTER 2 (item5902)
   - item5903 # EARNINGS PER SHARE - REPORT DATE - QUARTER 3 (item5903)
   - item5904 # EARNINGS PER SHARE - REPORT DATE - QUARTER 4 (item5904)
-worldscope_filter:
+wrds_ws_stock_filter:
 
 worldscope_sample_save_path: 'data/pulled/wrds_ws_stock.parquet'
 worldscope_sample_save_path_csv: 'data/pulled/wrds_ws_stock.csv'
