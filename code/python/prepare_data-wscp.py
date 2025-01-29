@@ -18,7 +18,6 @@ def main():
     link_ds_ws = pd.read_csv(cfg['link_ds_ws_save_path_csv'])
     ds2dsf = pd.read_csv(cfg['datastream_sample_save_path_csv'])
     
-
     # Step 1: Merge Worldscope with the Linking Table
     log.info("Merging Worldscope with Linking Table...")
     ws_link_merged = merge_worldscope_link(ws_stock, link_ds_ws)
@@ -27,9 +26,13 @@ def main():
     log.info("Merging merged data with Datastream...")
     final_merged = merge_with_datastream(ws_link_merged, ds2dsf)
 
+    # Step 3: Filter for valid earnings announcement dates
+    log.info("Filtering firm-year observations based on earnings announcement criteria...")
+    final_filtered = filter_valid_earnings(final_merged)
+
     # Save the prepared dataset
-    final_merged.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
-    final_merged.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+    final_filtered.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    final_filtered.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
     log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV)")
     log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
@@ -56,6 +59,40 @@ def merge_with_datastream(ws_link_merged, ds2dsf):
     log.info(f"Merged with Datastream. Final observations: {len(final_merged)}")
     return final_merged
 
+
+def filter_valid_earnings(df):
+    """
+    Filters out firm-year observations where:
+    1. Any of the earnings announcement dates (items 5901-5904) are missing.
+    2. All four earnings announcements must fall within the same calendar year.
+    """
+    initial_count = len(df)
+
+    # Drop rows where any of the quarterly earnings announcement dates are missing
+    df_filtered = df.dropna(subset=['item5901', 'item5902', 'item5903', 'item5904'])
+    after_na_drop = len(df_filtered)
+    log.info(f"Dropped {initial_count - after_na_drop} rows due to missing earnings announcement dates.")
+
+    # Ensure all four announcements fall within the same calendar year
+    df_filtered['year_5901'] = pd.to_datetime(df_filtered['item5901']).dt.year
+    df_filtered['year_5902'] = pd.to_datetime(df_filtered['item5902']).dt.year
+    df_filtered['year_5903'] = pd.to_datetime(df_filtered['item5903']).dt.year
+    df_filtered['year_5904'] = pd.to_datetime(df_filtered['item5904']).dt.year
+
+    df_filtered = df_filtered[
+        (df_filtered['year_5901'] == df_filtered['year_5902']) &
+        (df_filtered['year_5901'] == df_filtered['year_5903']) &
+        (df_filtered['year_5901'] == df_filtered['year_5904'])
+    ]
+    after_year_check = len(df_filtered)
+    log.info(f"Dropped {after_na_drop - after_year_check} rows due to earnings announcements spanning multiple years.")
+
+    # Drop the temporary year columns
+    df_filtered = df_filtered.drop(columns=['year_5901', 'year_5902', 'year_5903', 'year_5904'])
+
+    log.info(f"Final dataset size after filtering: {len(df_filtered)}")
+
+    return df_filtered
 
 
 if __name__ == "__main__":
