@@ -1,7 +1,7 @@
 # --- Header -------------------------------------------------------------------
 # See LICENSE file for details
 #
-# This code pulls data from WRDS Worldscope and Datastream Databases
+# This code pulls data from WRDS Worldscope and Datastream Databases and links them
 # ------------------------------------------------------------------------------
 import os
 from getpass import getpass
@@ -65,8 +65,7 @@ def pull_wrds_data(cfg, wrds_authentication):
     log.info("Logged on to WRDS ...")
 
 
-
-    log.info("Pulling Worldscope data ... ") # Pull Worldscope Stock Data
+    log.info("Pulling Worldscope data ... ")
     # Prepare the variables and filters for the WRDS Worldscope stock data query
     if cfg.get('wrds_ws_stock_vars'):
         wrds_ws_stock_vars = ', '.join(cfg['wrds_ws_stock_vars'])
@@ -82,12 +81,12 @@ def pull_wrds_data(cfg, wrds_authentication):
     log.info(f"Executing query: {worldscope_query}")
     worldscope_df = db.raw_sql(worldscope_query)
 
-    log.info("Pulling Worldscope data ... Done!")
+    log.info("Pulling WSCP data ... Done!")
 
 
 
-    log.info("Pulling Datastream data ... ") # Pull Datastream Daily Data
-    # Prepare the variables and filters
+    log.info("Pulling DS data ... ")
+    # Prepare the variables and filters likewise to pull from Datastream Daily Data
     if cfg.get('ds_vars'):
         ds_vars = ', '.join(cfg['ds_vars'])
     else:
@@ -101,13 +100,12 @@ def pull_wrds_data(cfg, wrds_authentication):
     ds_query = f"SELECT {ds_vars} FROM tr_ds_equities.wrds_ds2dsf WHERE {ds_filter}"
     log.info(f"Executing query: {ds_query}")
     ds_df = db.raw_sql(ds_query)
+    log.info("Pulling DS data ... Done!")
 
-    log.info("Pulling Datastream data ... Done!")
 
-
-    log.info("Pulling link data Worldscope/Datastream... ") 
+    log.info("Pulling link data WSCP/DS... ") 
     linkdata_df = db.get_table(library="wrdsapps_link_datastream_wscope", table="ds2ws_linktable") # Pull link Data
-    log.info("Pulling link data Worldscope/Datastream... Done!")
+    log.info("Pulling link data WSCP/DS... Done!")
 
     db.close()
     log.info("Disconnected from WRDS")

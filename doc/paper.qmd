@@ -215,7 +215,7 @@ Canada as the country of choice was influenced by the alignment with the methodo
 
 In addition, I impose the following assumptions apart from those listed in @sec-research_design_assumptions1 to ensure generalization and extension approach due to usage of other databases or where @ball_how_2008 do not provide explicit guidance:
 
-1. To ensure a smooth and conflict-free process, I handle the WSCP/Datastream workflow separately, preventing potential interference with the CRSP/Compustat pull process and improving debugging efficiency. Although a unified pull/prepare/do_analysis file for all databases would be ideal and streamline management, the large-scale nature of the extracted datasets is chosen for modular approach. Therefore, I isolate the data pull for @sec-task3 into `pull_wrds_data-wscp`, thus reducing complicated dependencies across tasks. To maintain structural consistency, I implement same approach for subsequent steps, including data preparation and analysis.
+1. To ensure a smooth and conflict-free process, I handle the WSCP/Datastream workflow separately, preventing potential interference with the CRSP/Compustat pull process and improving debugging efficiency. Although a unified pull/prepare/do_analysis file for all databases would be ideal and streamline management, the large-scale nature of the extracted datasets demands modular approach. Therefore, I isolate the workflow for @sec-task3 into working files `...-wscp`, thus reducing complicated dependencies across tasks.
 
 2. Since I do not perform subgroup analysis for December and non-December fiscal year end firms as in Table 2 Panels C-D, `item5350` for FISCAL PERIOD END DATE is not relevant for this task, as Figure 1 applies to the analysis of the entire dataset. So, the sample is all firm-years with available data on the quarterly Worlscope and daily Datastream files.
 
@@ -239,7 +239,7 @@ The data pull step retrieves quarterly earnings announcement dates from Worldsco
 The pull step results into three comprehensive datasets: DS table with 27,950,012, Link table with 77,944, WSCP table with 1,942,202 observations.
 
 **Step 2: Data Preparation**  
-
+First, I merged Worldscope stock data with the linking table using `code` as unique identifier, resulting in 747,760 observations. This merged dataset was then joined with Datastream daily stock data using `infocode`, producing a final dataset with 10,249,737 observations.
 
 If a firm has missing values for any of the Earnings Per Share Report Date fields (`item5901`–`item5904`), it does not meet the criteria set by @ball_how_2008 and was excluded from the sample.
 

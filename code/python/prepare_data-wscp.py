@@ -27,10 +27,6 @@ def main():
     log.info("Merging merged data with Datastream...")
     final_merged = merge_with_datastream(ws_link_merged, ds2dsf)
 
-    # Step 3: Adjust earnings announcement dates to match trading days
-    #log.info("Adjusting earnings announcement dates...")
-    #final_merged = adjust_announcement_dates(final_merged)
-
     # Save the prepared dataset
     final_merged.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
     final_merged.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
@@ -60,25 +56,7 @@ def merge_with_datastream(ws_link_merged, ds2dsf):
     log.info(f"Merged with Datastream. Final observations: {len(final_merged)}")
     return final_merged
 
-'''
-def adjust_announcement_dates(df):
-    """
-    Ensure that earnings announcement dates align with actual trading days.
-    If a date falls on a non-trading day, shift to the next available trading day.
-    """
-    def shift_to_trading_day(announcement_date, trading_dates):
-        return min([d for d in trading_dates if d >= announcement_date], default=None)
 
-    df["marketdate"] = pd.to_datetime(df["marketdate"])
-    trading_days = set(df["marketdate"])
-
-    for col in ["item5901", "item5902", "item5903", "item5904"]:
-        df[col] = pd.to_datetime(df[col])
-        df[col] = df[col].apply(lambda x: shift_to_trading_day(x, trading_days))
-
-    log.info("Earnings announcement dates adjusted.")
-    return df
-'''
 
 if __name__ == "__main__":
     main()
