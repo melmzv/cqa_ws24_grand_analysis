@@ -65,6 +65,7 @@ def filter_valid_earnings(df):
     Filters out firm-year observations where:
     1. Any of the earnings announcement dates (items 5901-5904) are missing.
     2. All four earnings announcements must fall within the same calendar year.
+    3. All four earnings announcement dates must be in the year **≤2023**.
     """
     initial_count = len(df)
 
@@ -73,11 +74,8 @@ def filter_valid_earnings(df):
     after_na_drop = len(df_filtered)
     log.info(f"Dropped {initial_count - after_na_drop} rows due to missing earnings announcement dates.")
 
-    # Convert date columns to string first (prevents issues with mixed types)
+    # Convert date columns to datetime format
     date_columns = ['item5901', 'item5902', 'item5903', 'item5904']
-    df_filtered[date_columns] = df_filtered[date_columns].astype(str)
-
-    # Convert date columns to datetime (with error handling)
     for col in date_columns:
         df_filtered[col] = pd.to_datetime(df_filtered[col], format="%m/%d/%y", errors='coerce')
 
@@ -95,6 +93,16 @@ def filter_valid_earnings(df):
     ]
     after_year_check = len(df_filtered)
     log.info(f"Dropped {after_na_drop - after_year_check} rows due to earnings announcements spanning multiple years.")
+
+    # Remove firm-year observations where any date is beyond 2023
+    df_filtered = df_filtered[
+        (df_filtered['year_5901'] <= 2023) &
+        (df_filtered['year_5902'] <= 2023) &
+        (df_filtered['year_5903'] <= 2023) &
+        (df_filtered['year_5904'] <= 2023)
+    ]
+    after_2023_check = len(df_filtered)
+    log.info(f"Dropped {after_year_check - after_2023_check} rows due to earnings announcements beyond 2023.")
 
     # Drop the temporary year columns
     df_filtered = df_filtered.drop(columns=['year_5901', 'year_5902', 'year_5903', 'year_5904'])

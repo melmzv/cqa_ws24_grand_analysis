@@ -227,6 +227,8 @@ In addition, I impose the following assumptions apart from those listed in @sec-
 
 6. I ignore the currency effect (CAD or USD) in DS table, as returns are measured in percentages, making them relative rather than absolute values.
 
+7. To account for non-trading days in Datastream, I extend the event window from (-1, +1) to (-3, +3) to ensure the inclusion of trading days around earnings announcements.
+
 
 ## Replication Steps {#sec-replication_steps3}
 Same as in @sec-task1 the analysis involves gathering and filtering stock return and earnings announcement data, linking Datastream stock data with WSCP (Worldscope), and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
@@ -241,7 +243,7 @@ The pull step results into three comprehensive datasets: DS table with 27,950,01
 **Step 2: Data Preparation**  
 First, I merged Worldscope stock data with the linking table using `code` as unique identifier, resulting in 747,760 observations. This merged dataset was then joined with Datastream daily stock data using `infocode`, producing a final dataset with 10,249,737 observations.
 
-If a firm had missing values for any of the Earnings Per Share Report Date fields (item5901–item5904), it did not meet the criteria set by @ball_how_2008 and was excluded from the sample. This filtering step removed 3,609,492 firm-year observations. Additionally, 5,996,793 firm-year entries were dropped because their four earnings announcements did not fall within the same calendar year. The final dataset consists of only 643,452 valid firm-year observations, starting in 1996 only, signaling the potential difference in the acocunting standards between the U.S. and Canada.
+If a firm had missing values for any of the Earnings Per Share Report Date fields (item5901–item5904), it did not meet the criteria set by @ball_how_2008 and was excluded from the sample. This filtering step removed 3,609,492 missing firm-year observations. Additionally, 5,996,793 firm-year entries were dropped because their four earnings announcements did not fall within the same calendar year. The final dataset consists of only 616,980 valid firm-year observations, starting in 1996 only, signaling the potential difference in the accounting standards between the U.S. and Canada.
 
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
 
