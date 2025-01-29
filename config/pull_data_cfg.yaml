@@ -48,6 +48,8 @@ ds_vars:
   - region # Country code indicating where the security is traded to futher filter for Canada
   - typecode # Code indicating the type of equity
   - ret # Percentage change in RI based on the RI from last trading date 
+  - dscode # Additional Datastream unique identifier (potentially useful for linking)
+
 
 ds_filter:
   - "marketdate >= '1980-01-01'" # Starting with 1980 since year_ starts within this range - helps to omit many NAs

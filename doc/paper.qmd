@@ -234,9 +234,13 @@ Same as in @sec-task1 the analysis involves gathering and filtering stock return
 **Step 1: Pulling the Data and Managing the Databases**  
 I follow the linking approach between Worldscope and Datastream based on @dai_research_2021. The original study uses data from 1972 onward, while Worldscope's `year_` variable only provides data starting from 1980 [@wharton_research_data_services_worldscope_2025]. This constraint may lead to differences in sample coverage. Hence, filter Datastream `marketdate` to 1980 to prevent mismatched observations where stock data exists but earnings do not. 
 
-The data pull step retrieves quarterly earnings announcement dates from Worldscope and daily stock returns from Datastream, filtering for Canadian firms from 1980 onward. The datasets are saved separately and later merged using firm-level identifiers. Only common equity (`typecode` = EQ) is included to ensure consistency with CRSP.
+The data pull step retrieves quarterly earnings announcement dates from Worldscope and daily stock returns from Datastream, filtering for Canadian firms from 1980 onward. The datasets are saved separately and later merged using firm-level identifiers. Only common equity (`typecode` = EQ) is included to ensure consistency with CRSP. 
+
+The pull step results into three comprehensive datasets: DS table with 27,950,012, Link table with 77,944, WSCP table with 1,942,202 observations.
 
 **Step 2: Data Preparation**  
+
+
 If a firm has missing values for any of the Earnings Per Share Report Date fields (`item5901`–`item5904`), it does not meet the criteria set by @ball_how_2008 and was excluded from the sample.
 
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
