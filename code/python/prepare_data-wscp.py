@@ -32,11 +32,11 @@ def main():
     #final_merged = adjust_announcement_dates(final_merged)
 
     # Save the prepared dataset
-    final_merged.to_csv(cfg['prepared_data_save_path'], index=False)
-    final_merged.to_parquet(cfg['prepared_data_save_path_parquet'], index=False)
+    final_merged.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    final_merged.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
-    log.info(f"Prepared data saved to {cfg['prepared_data_save_path']} (CSV)")
-    log.info(f"Prepared data saved to {cfg['prepared_data_save_path_parquet']} (Parquet)")
+    log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV)")
+    log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
 
     log.info("Preparing data for analysis ... Done!")
 
