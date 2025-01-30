@@ -38,13 +38,15 @@ def main():
     log.info("Selecting firms that meet the sample criteria (4 announcements per year)...")
     final_dataset = select_firms_for_sample(merged_dataset)
 
-    # Step 5: Compute the Buy-and-Hold Returns (BHR)
+    # Step 6: Compute the Buy-and-Hold Returns (BHR)
+    log.info("Computing 3-day Buy-and-Hold Returns (BHR)...")
     bhr_results = compute_eawr_bhr(final_dataset)
 
-    # Step 6: Save only the BHR results
+    # Step 7: Save only the BHR results
+    log.info("Saving BHR results dataset...")
     save_bhr_results(bhr_results, cfg)
 
-    # Save the final dataset
+    # Step 8: Save the final dataset (full dataset with event windows)
     final_dataset.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
     final_dataset.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
@@ -260,7 +262,7 @@ def compute_eawr_bhr(df):
     """
     Computes the Earnings Announcement Window Return (EAWR) as the 
     buy-and-hold return (BHR) over the three-day event window (-1,0,+1).
-    Skips calculations for missing event windows.
+    Retains the `quarter` column from the original dataset.
     """
     log.info("Computing Earnings Announcement Window Returns (3-day BHR)...")
 
@@ -271,45 +273,55 @@ def compute_eawr_bhr(df):
     bhr_results = []
     
     for (infocode, rdq), group in df.groupby(["infocode", "rdq"]):
-        # Ensure all required event windows are present
+        # Ensure all required event windows (-1, 0, +1) are present
         if set(group["event_window"]) == {-1, 0, 1}:  
             try:
                 ret_neg1 = group.loc[group["event_window"] == -1, "ret"].values[0]
                 ret_0 = group.loc[group["event_window"] == 0, "ret"].values[0]
                 ret_1 = group.loc[group["event_window"] == 1, "ret"].values[0]
 
+                # Retrieve quarter information (same across event window)
+                quarter = group["quarter"].iloc[0]  
+
                 # Compute BHR_3day
                 bhr_3day = (1 + ret_neg1) * (1 + ret_0) * (1 + ret_1) - 1
 
-                # Append results
-                bhr_results.append({"infocode": infocode, "rdq": rdq, "BHR_3day": bhr_3day})
+                # Append results with quarter info
+                bhr_results.append({
+                    "infocode": infocode,
+                    "rdq": rdq,
+                    "quarter": quarter,  # Retain quarter for regression later
+                    "BHR_3day": bhr_3day
+                })
             except Exception as e:
                 log.warning(f"Skipping {infocode} on {rdq} due to missing data: {e}")
     
     # Convert to DataFrame
     df_bhr = pd.DataFrame(bhr_results)
 
-    log.info(f"Computed {len(df_bhr)} earnings announcement window returns.")
+    log.info(f"Computed {len(df_bhr)} earnings announcement window returns. Quarter column is retained.")
     return df_bhr
 
 
 def save_bhr_results(df_bhr, cfg):
     """
     Saves the computed BHR_3day dataset to CSV and Parquet formats.
+    Ensures the `quarter` column is retained.
     """
     log.info("Saving BHR dataset...")
 
-    # Keep only relevant columns
-    df_bhr_filtered = df_bhr[["infocode", "rdq", "BHR_3day"]]
+    # Keep only relevant columns (Include `quarter` for regression use)
+    df_bhr_filtered = df_bhr[["infocode", "rdq", "quarter", "BHR_3day"]]
 
-    # Save dataset
+    # Save dataset paths from config
     bhr_csv_path = cfg["bhr_output_csv"]
     bhr_parquet_path = cfg["bhr_output_parquet"]
-    
+
+    # Save as CSV and Parquet
     df_bhr_filtered.to_csv(bhr_csv_path, index=False)
     df_bhr_filtered.to_parquet(bhr_parquet_path, index=False)
 
-    log.info(f"BHR dataset saved to {bhr_csv_path} (CSV) and {bhr_parquet_path} (Parquet).")
+    log.info(f"BHR dataset saved to {bhr_csv_path} (CSV) and {bhr_parquet_path} (Parquet). Quarter column is retained.")
 
 if __name__ == "__main__":
     main()
