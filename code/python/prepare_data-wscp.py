@@ -131,6 +131,13 @@ def merge_with_datastream(df_expanded, ds2dsf):
     # Merge on `infocode` and `event_date` = `marketdate`
     df_final = df_expanded.merge(ds2dsf, left_on=["infocode", "event_date"], right_on=["infocode", "marketdate"], how="left")
 
+    # Check for unmatched event dates (missing stock return data)
+    missing_ret_count = df_final["ret"].isna().sum()
+    log.warning(f"{missing_ret_count} rows have missing stock return data. These will be removed.")
+
+    # Drop rows where `ret` is missing (i.e., the merge was not possible)
+    df_final = df_final.dropna(subset=["ret"]).copy()
+
     # Identify where `ret = 0` for event window 0
     zero_ret_rows = df_final[(df_final["event_window"] == 0) & (df_final["ret"] == 0)]
     log.info(f"Identified {len(zero_ret_rows)} cases where `ret = 0` on Day 0.")
