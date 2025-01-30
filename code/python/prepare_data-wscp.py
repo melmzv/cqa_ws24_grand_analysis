@@ -139,14 +139,14 @@ def merge_with_datastream(df_expanded, ds2dsf):
     # Drop rows where `ret` is missing (i.e., the merge was not possible)
     df_final = df_final.dropna(subset=["ret"]).copy()
 
-    # Identify where `ret = 0` for event window 0
-    zero_ret_rows = df_final[(df_final["event_window"] == 0) & (df_final["ret"] == 0)]
-    log.info(f"Identified {len(zero_ret_rows)} cases where `ret = 0` on Day 0.")
+    # Identify where `ret = 0` for event windows -1, 0, +1
+    zero_ret_rows = df_final[(df_final["event_window"].isin([-1, 0, 1])) & (df_final["ret"] == 0)]
+    log.info(f"Identified {len(zero_ret_rows)} cases where `ret = 0` in key event windows (-1, 0, +1).")
 
     # List of infocode & year_ pairs where no valid trading day is found
     failed_rdq_infocode_pairs = []
 
-    # Shift `event_date` continuously until a valid `ret != 0` is found
+    # **SHIFTING MECHANISM** - Adjusts Day 0 first, then Day -1 and Day +1 dynamically
     for index, row in zero_ret_rows.iterrows():
         new_date = row["event_date"]
         shifted = False  # Track if shifting was successful
