@@ -30,11 +30,15 @@ def main():
     log.info("Expanding dataset for event windows...")
     ws_expanded = expand_event_window(ws_long)
 
-    # Save the expanded dataset
-    ws_expanded.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
-    ws_expanded.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+    # Step 4: Merge with Datastream stock returns
+    log.info("Merging expanded dataset with Datastream stock returns...")
+    final_dataset = merge_with_datastream(ws_expanded, ds2dsf)
 
-    log.info(f"Expanded data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
+    # Save the final dataset
+    final_dataset.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    final_dataset.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+
+    log.info(f"Final dataset saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
 
     log.info("Preparing data for analysis ... Done!")
 
@@ -111,6 +115,27 @@ def expand_event_window(df):
 
     log.info(f"Expanded dataset. New number of rows: {len(df_expanded)}")
     return df_expanded
+
+
+def merge_with_datastream(df_expanded, ds2dsf):
+    """
+    Merge expanded dataset with Datastream stock returns using `infocode` and `event_date`.
+    """
+    log.info("Merging with Datastream stock returns...")
+
+    # Ensure marketdate is in datetime format
+    ds2dsf["marketdate"] = pd.to_datetime(ds2dsf["marketdate"], format="%m/%d/%y", errors="coerce")
+
+    # Merge on `infocode` and `event_date` = `marketdate`
+    df_final = df_expanded.merge(ds2dsf, left_on=["infocode", "event_date"], right_on=["infocode", "marketdate"], how="left")
+
+    # Check for unmatched event dates (missing stock return data)
+    missing_ret_count = df_final["ret"].isna().sum()
+    log.warning(f"{missing_ret_count} rows have missing stock return data. These might be non-trading days.")
+
+    log.info(f"Final merged dataset. Observations: {len(df_final)}")
+    return df_final
+
 
 '''
 def merge_with_datastream(ws_link_merged, ds2dsf):
