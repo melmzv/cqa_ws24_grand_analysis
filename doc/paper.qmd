@@ -227,8 +227,6 @@ In addition, I impose the following assumptions apart from those listed in @sec-
 
 6. I ignore the currency effect (CAD or USD) in DS table, as returns are measured in percentages, making them relative rather than absolute values.
 
-7. To account for non-trading days in Datastream, I extend the event window from (-1, +1) to (-3, +3) to ensure higher inclusion of trading days around earnings announcements.
-
 
 ## Replication Steps {#sec-replication_steps3}
 Same as in @sec-task1 the analysis involves gathering and filtering stock return and earnings announcement data, linking Datastream stock data with WSCP (Worldscope), and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.

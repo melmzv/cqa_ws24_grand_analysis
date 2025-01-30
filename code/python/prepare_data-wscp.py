@@ -26,11 +26,15 @@ def main():
     log.info("Pivoting merged dataset to long format...")
     ws_long = pivot_longer_earnings(ws_link_merged)
 
-    # Save the pivoted dataset directly to the predefined paths
-    ws_long.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
-    ws_long.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+    # Step 3: Expand dataset for event windows (-1, 0, +1 days)
+    log.info("Expanding dataset for event windows...")
+    ws_expanded = expand_event_window(ws_long)
 
-    log.info(f"Pivoted data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
+    # Save the expanded dataset
+    ws_expanded.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    ws_expanded.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+
+    log.info(f"Expanded data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
 
     log.info("Preparing data for analysis ... Done!")
 
@@ -80,32 +84,33 @@ def pivot_longer_earnings(ws_link_merged):
 
     return ws_long
 
-def expand_event_window(ws_long):
+def expand_event_window(df):
     """
-    Expands the dataset by applying a ±1 day offset to each earnings announcement date.
-    Creates additional rows for Day -1, Day 0, and Day +1.
+    Expands dataset by adding -1, 0, and +1 day event windows for each earnings announcement.
     """
     log.info("Expanding dataset to include event windows (-1, 0, +1 days)...")
 
-    # Define offsets: -1 (before), 0 (announcement day), +1 (after)
+    # Ensure rdq is properly parsed as datetime
+    df["rdq"] = pd.to_datetime(df["rdq"], format="%m/%d/%y", errors="coerce")  
+
+    # Log the number of NaT values before expansion
+    num_nat = df["rdq"].isna().sum()
+    if num_nat > 0:
+        log.warning(f"Found {num_nat} missing or unconvertible 'rdq' values. Skipping these rows.")
+
+    # Drop NaT values to avoid issues in expansion
+    df = df.dropna(subset=["rdq"]).copy()
+
+    # Define the event window offsets (-1, 0, +1)
     offsets = [-1, 0, 1]
 
-    # Create a list of expanded rows by iterating over all offsets
-    expanded_rows = []
-    for _, row in ws_long.iterrows():
-        for offset in offsets:
-            new_row = row.copy()
-            new_row["event_day"] = offset  # Indicate event window (-1, 0, 1)
-            new_row["event_date"] = row["announcement_date"] + pd.DateOffset(days=offset)  # Shift date
-            expanded_rows.append(new_row)
+    # Generate new rows efficiently using pandas repeat + offsets
+    df_expanded = df.loc[df.index.repeat(len(offsets))].reset_index(drop=True)
+    df_expanded["event_window"] = offsets * (len(df))  # Apply offsets
+    df_expanded["event_date"] = df_expanded["rdq"] + pd.to_timedelta(df_expanded["event_window"], unit="D")
 
-    # Convert list to DataFrame
-    ws_expanded = pd.DataFrame(expanded_rows)
-
-    # Log transformation details
-    log.info(f"Expanded dataset size: {len(ws_expanded)} rows (original: {len(ws_long)} rows)")
-
-    return ws_expanded
+    log.info(f"Expanded dataset. New number of rows: {len(df_expanded)}")
+    return df_expanded
 
 '''
 def merge_with_datastream(ws_link_merged, ds2dsf):
