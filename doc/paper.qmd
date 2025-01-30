@@ -227,7 +227,7 @@ In addition, I impose the following assumptions apart from those listed in @sec-
 
 6. I ignore the currency effect (CAD or USD) in DS table, as returns are measured in percentages, making them relative rather than absolute values.
 
-7. To account for non-trading days in Datastream, I extend the event window from (-1, +1) to (-3, +3) to ensure the inclusion of trading days around earnings announcements.
+7. To account for non-trading days in Datastream, I extend the event window from (-1, +1) to (-3, +3) to ensure higher inclusion of trading days around earnings announcements.
 
 
 ## Replication Steps {#sec-replication_steps3}

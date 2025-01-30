@@ -66,6 +66,7 @@ def filter_valid_earnings(df):
     1. Any of the earnings announcement dates (items 5901-5904) are missing.
     2. All four earnings announcements must fall within the same calendar year.
     3. All four earnings announcement dates must be in the year **≤2023**.
+    4. Removes rows where all four earnings announcement dates are identical.
     Also, identifies the years in `marketdate` where `ret = 0` is most frequent.
     """
     initial_count = len(df)
@@ -104,6 +105,16 @@ def filter_valid_earnings(df):
     ]
     after_2023_check = len(df_filtered)
     log.info(f"Dropped {after_year_check - after_2023_check} rows due to earnings announcements beyond 2023.")
+
+    # Remove rows where all four announcement dates are identical
+    before_unique_filter = len(df_filtered)
+    df_filtered = df_filtered[
+        ~((df_filtered['item5901'] == df_filtered['item5902']) &
+          (df_filtered['item5901'] == df_filtered['item5903']) &
+          (df_filtered['item5901'] == df_filtered['item5904']))
+    ]
+    after_unique_filter = len(df_filtered)
+    log.info(f"Dropped {before_unique_filter - after_unique_filter} rows where all four earnings announcements were identical.")
 
     # Count NaN values in the 'ret' column before replacing them
     nan_count = df_filtered['ret'].isna().sum()
