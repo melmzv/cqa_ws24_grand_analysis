@@ -241,9 +241,9 @@ The data pull step retrieves quarterly earnings announcement dates from Worldsco
 The pull step results into three comprehensive datasets: DS table with 27,950,012, Link table with 77,944, WSCP table with 1,942,202 observations.
 
 **Step 2: Data Preparation**  
-First, I merged Worldscope stock data with the linking table using `code` as unique identifier, resulting in 747,760 observations. This merged dataset was then joined with Datastream daily stock data using `infocode`, producing a final dataset with 10,249,737 observations.
+First, I merged Worldscope stock data with the linking table using `code` as unique identifier, resulting in 747,760 observations. This merged dataset was then joined with Datastream daily stock data using unique `infocode`, producing a final dataset with 10,249,737 observations.
 
-If a firm had missing values for any of the Earnings Per Share Report Date fields (item5901–item5904), it did not meet the criteria set by @ball_how_2008 and was excluded from the sample. This filtering step removed 3,609,492 missing firm-year observations. Additionally, 5,996,793 firm-year entries were dropped because their four earnings announcements did not fall within the same calendar year. The final dataset consists of only 616,980 valid firm-year observations, starting in 1996 only, signaling the potential difference in the accounting standards between the U.S. and Canada.
+If a firm had missing values for any of the Earnings Per Share Report Date fields (item5901–item5904), it did not meet the criteria set by @ball_how_2008 and was excluded from the sample. This filtering step removed 3,609,492 missing firm-year observations. Additionally, 5,996,793 firm-year entries were dropped because their four earnings announcements did not fall within the same calendar year. The final dataset consists of only 616,980 valid firm-year observations, starting in 1996 only, signaling the potential difference in the accounting reporting standards between the U.S. and Canada.
 
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
 

@@ -66,6 +66,7 @@ def filter_valid_earnings(df):
     1. Any of the earnings announcement dates (items 5901-5904) are missing.
     2. All four earnings announcements must fall within the same calendar year.
     3. All four earnings announcement dates must be in the year **≤2023**.
+    Also, identifies the years in `marketdate` where `ret = 0` is most frequent.
     """
     initial_count = len(df)
 
@@ -110,9 +111,21 @@ def filter_valid_earnings(df):
     df_filtered['ret'] = df_filtered['ret'].fillna(0)
     log.info(f"Replaced {nan_count} NaN values in 'ret' column with 0.")
 
+    # Convert 'marketdate' to datetime format
+    df_filtered['marketdate'] = pd.to_datetime(df_filtered['marketdate'], errors='coerce')
+
+    # Extract year from 'marketdate'
+    df_filtered['market_year'] = df_filtered['marketdate'].dt.year
+
     # Count rows where ret=0
     zero_ret_count = (df_filtered['ret'] == 0).sum()
     log.info(f"Number of rows where 'ret' = 0: {zero_ret_count}")
+
+    # Identify years with the most occurrences of ret = 0
+    zero_ret_by_year = df_filtered[df_filtered['ret'] == 0]['market_year'].value_counts()
+    
+    log.info("Top 5 years with the most occurrences of 'ret = 0':")
+    log.info(zero_ret_by_year.head(5).to_string())
 
     # Drop the temporary year columns
     df_filtered = df_filtered.drop(columns=['year_5901', 'year_5902', 'year_5903', 'year_5904'])
