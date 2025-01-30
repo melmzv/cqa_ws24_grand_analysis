@@ -110,12 +110,17 @@ def filter_valid_earnings(df):
     df_filtered['ret'] = df_filtered['ret'].fillna(0)
     log.info(f"Replaced {nan_count} NaN values in 'ret' column with 0.")
 
+    # Count rows where ret=0
+    zero_ret_count = (df_filtered['ret'] == 0).sum()
+    log.info(f"Number of rows where 'ret' = 0: {zero_ret_count}")
+
     # Drop the temporary year columns
     df_filtered = df_filtered.drop(columns=['year_5901', 'year_5902', 'year_5903', 'year_5904'])
 
     log.info(f"Final dataset size after filtering: {len(df_filtered)}")
 
     return df_filtered
+
 
 
 
