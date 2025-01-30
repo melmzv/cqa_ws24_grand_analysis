@@ -17,7 +17,7 @@ def main():
     ws_stock = pd.read_csv(cfg['worldscope_sample_save_path_csv'])
     link_ds_ws = pd.read_csv(cfg['link_ds_ws_save_path_csv'])
     ds2dsf = pd.read_csv(cfg['datastream_sample_save_path_csv'])
-    
+
     # Step 1: Merge Worldscope with the Linking Table
     log.info("Merging Worldscope with Linking Table...")
     ws_link_merged = merge_worldscope_link(ws_stock, link_ds_ws)
@@ -30,9 +30,15 @@ def main():
     log.info("Filtering firm-year observations based on earnings announcement criteria...")
     final_filtered = filter_valid_earnings(final_merged)
 
+    # Step 4: Match earnings announcements with stock returns
+    final_matched = match_earnings_to_market_dates(final_filtered)
+
+    # Step 5: Compute deviation statistics
+    deviation_stats = compute_deviation_statistics(final_matched)
+
     # Save the prepared dataset
-    final_filtered.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
-    final_filtered.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+    final_matched.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    final_matched.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
     log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV)")
     log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
@@ -146,7 +152,76 @@ def filter_valid_earnings(df):
     return df_filtered
 
 
+def match_earnings_to_market_dates(df):
+    """
+    Match quarterly earnings announcement dates (item5901-4) to market trading dates per firm.
+    Assign the closest available stock return (ret) for each earnings date.
+    """
 
+    log.info("Matching earnings announcements to valid trading days...")
+
+    # Convert 'marketdate' to datetime
+    df["marketdate"] = pd.to_datetime(df["marketdate"], errors="coerce")
+
+    # Filter only necessary columns for efficiency
+    market_data = df[["infocode", "marketdate", "ret"]].drop_duplicates()
+
+    # Create a lookup dictionary {infocode: DataFrame with marketdate & ret}
+    market_lookup = {
+        infocode: group.set_index("marketdate")["ret"]
+        for infocode, group in market_data.groupby("infocode")
+    }
+
+    # Initialize new columns for matched returns and days deviation
+    for q in range(1, 5):
+        df[f"q{q}_day_0"] = pd.NaT  # Matched market date
+        df[f"q{q}_ret"] = None  # Matched return value
+        df[f"q{q}_day_0_deviation"] = None  # Days deviation
+
+    # Iterate over each row to match market dates per firm
+    for idx, row in df.iterrows():
+        infocode = row["infocode"]
+
+        if infocode not in market_lookup:
+            continue  # Skip if no market data is available
+
+        for q in range(1, 5):
+            earnings_date = row[f"item590{q}"]
+
+            if pd.isna(earnings_date):
+                continue  # Skip if earnings date is missing
+
+            earnings_date = pd.to_datetime(earnings_date)
+
+            # Find closest available market date in firm's data
+            available_dates = market_lookup[infocode].index
+            matched_date = available_dates[available_dates >= earnings_date].min()
+
+            if pd.isna(matched_date):
+                continue  # No valid market date found, leave NaN
+
+            # Assign values to the new columns
+            df.at[idx, f"q{q}_day_0"] = matched_date
+            df.at[idx, f"q{q}_ret"] = market_lookup[infocode].loc[matched_date]
+            df.at[idx, f"q{q}_day_0_deviation"] = (matched_date - earnings_date).days
+
+    log.info("Earnings announcement matching complete.")
+    return df
+
+
+def compute_deviation_statistics(df):
+    """
+    Compute summary statistics for the deviation in event window alignment.
+    """
+    log.info("Computing deviation statistics...")
+
+    deviation_stats = {
+        f"q{q}_day_0_deviation": df[f"q{q}_day_0_deviation"].mean(skipna=True)
+        for q in range(1, 5)
+    }
+
+    log.info(f"Average days deviation per quarter: {deviation_stats}")
+    return deviation_stats
 
 
 if __name__ == "__main__":
