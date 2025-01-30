@@ -121,7 +121,7 @@ def expand_event_window(df):
 def merge_with_datastream(df_expanded, ds2dsf):
     """
     Merge expanded dataset with Datastream stock returns using `infocode` and `event_date`,
-    then adjust `event_date` for missing stock returns (`ret = 0`).
+    then adjust `event_date` for missing stock returns (`ret = 0`), ensuring continuous shifting.
     """
     log.info("Merging with Datastream stock returns...")
 
@@ -142,18 +142,31 @@ def merge_with_datastream(df_expanded, ds2dsf):
     zero_ret_rows = df_final[(df_final["event_window"] == 0) & (df_final["ret"] == 0)]
     log.info(f"Identified {len(zero_ret_rows)} cases where `ret = 0` on Day 0.")
 
-    # Shift `event_date` to the next available trading day if `ret = 0`
+    # Shift `event_date` continuously until a valid `ret != 0` is found
     for index, row in zero_ret_rows.iterrows():
-        possible_dates = df_final[
-            (df_final["infocode"] == row["infocode"]) & 
-            (df_final["event_date"] > row["event_date"]) & 
-            (df_final["ret"] != 0)
-        ].sort_values(by="event_date")
+        new_date = row["event_date"]
 
-        if not possible_dates.empty:
-            new_date = possible_dates.iloc[0]["event_date"]  # Take the next available trading date
-            df_final.at[index, "event_date"] = new_date
-            df_final.at[index, "ret"] = possible_dates.iloc[0]["ret"]  # Update return value
+        while True:
+            # Get the next available trading date with `ret != 0`
+            possible_dates = df_final[
+                (df_final["infocode"] == row["infocode"]) & 
+                (df_final["event_date"] > new_date) & 
+                (df_final["ret"] != 0)
+            ].sort_values(by="event_date")
+
+            if not possible_dates.empty:
+                new_date = possible_dates.iloc[0]["event_date"]  # Update event_date
+                new_ret = possible_dates.iloc[0]["ret"]
+
+                # Ensure `ret != 0`
+                if new_ret != 0:
+                    df_final.at[index, "event_date"] = new_date
+                    df_final.at[index, "ret"] = new_ret
+                    break  # Exit loop once a valid date is found
+
+            else:
+                log.warning(f"No valid trading day found for infocode {row['infocode']} on {row['event_date']}. Keeping original.")
+                break  # Exit loop if no more valid dates exist
 
     # Drop unnecessary variables after merging
     drop_columns = ["region", "typecode", "dscode", "marketdate"]
