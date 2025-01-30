@@ -119,7 +119,8 @@ def expand_event_window(df):
 
 def merge_with_datastream(df_expanded, ds2dsf):
     """
-    Merge expanded dataset with Datastream stock returns using `infocode` and `event_date`.
+    Merge expanded dataset with Datastream stock returns using `infocode` and `event_date`,
+    then drop unnecessary columns and remove rows where merging failed.
     """
     log.info("Merging with Datastream stock returns...")
 
@@ -131,9 +132,17 @@ def merge_with_datastream(df_expanded, ds2dsf):
 
     # Check for unmatched event dates (missing stock return data)
     missing_ret_count = df_final["ret"].isna().sum()
-    log.warning(f"{missing_ret_count} rows have missing stock return data. These might be non-trading days.")
+    log.warning(f"{missing_ret_count} rows have missing stock return data. These will be removed.")
 
-    log.info(f"Final merged dataset. Observations: {len(df_final)}")
+    # Drop rows where `ret` is missing (i.e., the merge was not possible)
+    df_final = df_final.dropna(subset=["ret"]).copy()
+
+    # Drop unnecessary variables after merging
+    drop_columns = ["region", "typecode", "dscode", "marketdate"]  # Also remove redundant `marketdate`
+    df_final = df_final.drop(columns=drop_columns, errors="ignore")
+    log.info(f"Dropped unnecessary columns: {drop_columns}")
+
+    log.info(f"Final merged dataset after dropping unmatched rows. Observations: {len(df_final)}")
     return df_final
 
 
