@@ -22,13 +22,15 @@ def main():
     log.info("Merging Worldscope with Linking Table...")
     ws_link_merged = merge_worldscope_link(ws_stock, link_ds_ws)
 
+    # Step 2: Pivot dataset to long format
+    log.info("Pivoting merged dataset to long format...")
+    ws_long = pivot_longer_earnings(ws_link_merged)
 
+    # Save the pivoted dataset directly to the predefined paths
+    ws_long.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    ws_long.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
-    # Save the prepared dataset
-    ws_link_merged.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
-    ws_link_merged.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
-
-    log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
+    log.info(f"Pivoted data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
 
     log.info("Preparing data for analysis ... Done!")
 
@@ -61,7 +63,7 @@ def pivot_longer_earnings(ws_link_merged):
         id_vars=["year_", "item6105", "infocode"],  # Keep these as identifiers
         value_vars=["item5901", "item5902", "item5903", "item5904"],  # Pivot these columns
         var_name="quarter", 
-        value_name="announcement_date"
+        value_name="rdq"
     )
 
     # Map quarter names for clarity
@@ -77,6 +79,33 @@ def pivot_longer_earnings(ws_link_merged):
     log.info(f"Pivoted dataset. New number of rows: {len(ws_long)}")
 
     return ws_long
+
+def expand_event_window(ws_long):
+    """
+    Expands the dataset by applying a ±1 day offset to each earnings announcement date.
+    Creates additional rows for Day -1, Day 0, and Day +1.
+    """
+    log.info("Expanding dataset to include event windows (-1, 0, +1 days)...")
+
+    # Define offsets: -1 (before), 0 (announcement day), +1 (after)
+    offsets = [-1, 0, 1]
+
+    # Create a list of expanded rows by iterating over all offsets
+    expanded_rows = []
+    for _, row in ws_long.iterrows():
+        for offset in offsets:
+            new_row = row.copy()
+            new_row["event_day"] = offset  # Indicate event window (-1, 0, 1)
+            new_row["event_date"] = row["announcement_date"] + pd.DateOffset(days=offset)  # Shift date
+            expanded_rows.append(new_row)
+
+    # Convert list to DataFrame
+    ws_expanded = pd.DataFrame(expanded_rows)
+
+    # Log transformation details
+    log.info(f"Expanded dataset size: {len(ws_expanded)} rows (original: {len(ws_long)} rows)")
+
+    return ws_expanded
 
 '''
 def merge_with_datastream(ws_link_merged, ds2dsf):
