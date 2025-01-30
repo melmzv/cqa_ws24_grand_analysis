@@ -22,13 +22,26 @@ def main():
     log.info("Merging Worldscope with Linking Table...")
     ws_link_merged = merge_worldscope_link(ws_stock, link_ds_ws)
 
+    # Step 2: Merge the previous with Datastream data
+    log.info("Merging merged data with Datastream...")
+    final_merged = merge_with_datastream(ws_link_merged, ds2dsf)
 
+    # Step 3: Filter for valid earnings announcement dates
+    log.info("Filtering firm-year observations based on earnings announcement criteria...")
+    final_filtered = filter_valid_earnings(final_merged)
+
+    # Step 4: Match earnings announcements with stock returns
+    final_matched = match_earnings_to_market_dates(final_filtered)
+
+    # Step 5: Compute deviation statistics
+    deviation_stats = compute_deviation_statistics(final_matched)
 
     # Save the prepared dataset
-    ws_link_merged.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
-    ws_link_merged.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
+    final_matched.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
+    final_matched.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
-    log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV) and {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
+    log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_path']} (CSV)")
+    log.info(f"Prepared data saved to {cfg['prepared_wrds_ds2dsf_parquet']} (Parquet)")
 
     log.info("Preparing data for analysis ... Done!")
 
@@ -37,48 +50,12 @@ def merge_worldscope_link(ws_stock, link_ds_ws):
     """
     Merge Worldscope stock data with the linking table.
     Uses `code` (QA ID for Worldscope) to join with the linking table.
-    Keeps only the relevant columns: year_, item6105, item5901, item5902, item5903, item5904, infocode.
     """
-    # Merge datasets
     ws_link_merged = ws_stock.merge(link_ds_ws, left_on="code", right_on="code", how="inner")
     log.info(f"Merged Worldscope and Linking Table. Observations: {len(ws_link_merged)}")
-
-    # Keep only relevant columns
-    selected_columns = ["year_", "item6105", "item5901", "item5902", "item5903", "item5904", "infocode"]
-    ws_link_merged = ws_link_merged[selected_columns]
-    log.info(f"Filtered merged dataset to keep only relevant columns: {selected_columns}")
-
     return ws_link_merged
 
-def pivot_longer_earnings(ws_link_merged):
-    """
-    Transforms the dataset from wide to long format, making each earnings announcement its own row.
-    """
-    log.info("Pivoting dataset to longer format...")
 
-    # Pivot longer to have one earnings announcement per row
-    ws_long = ws_link_merged.melt(
-        id_vars=["year_", "item6105", "infocode"],  # Keep these as identifiers
-        value_vars=["item5901", "item5902", "item5903", "item5904"],  # Pivot these columns
-        var_name="quarter", 
-        value_name="announcement_date"
-    )
-
-    # Map quarter names for clarity
-    quarter_mapping = {
-        "item5901": "Q1",
-        "item5902": "Q2",
-        "item5903": "Q3",
-        "item5904": "Q4"
-    }
-    ws_long["quarter"] = ws_long["quarter"].map(quarter_mapping)
-
-    # Log transformation
-    log.info(f"Pivoted dataset. New number of rows: {len(ws_long)}")
-
-    return ws_long
-
-'''
 def merge_with_datastream(ws_link_merged, ds2dsf):
     """
     Merge the Worldscope-linked dataset with Datastream.
@@ -244,7 +221,7 @@ def compute_deviation_statistics(df):
     }
 
     log.info(f"Average days deviation per quarter: {deviation_stats}")
-    return deviation_stats'''
+    return deviation_stats
 
 
 if __name__ == "__main__":
