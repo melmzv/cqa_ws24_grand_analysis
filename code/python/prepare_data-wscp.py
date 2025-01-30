@@ -122,6 +122,7 @@ def merge_with_datastream(df_expanded, ds2dsf):
     """
     Merge expanded dataset with Datastream stock returns using `infocode` and `event_date`,
     then adjust `event_date` for missing stock returns (`ret = 0`), ensuring continuous shifting.
+    If no valid trading day is found for Day 0, the entire event window (-3 to +3) is dropped.
     """
     log.info("Merging with Datastream stock returns...")
 
@@ -142,9 +143,13 @@ def merge_with_datastream(df_expanded, ds2dsf):
     zero_ret_rows = df_final[(df_final["event_window"] == 0) & (df_final["ret"] == 0)]
     log.info(f"Identified {len(zero_ret_rows)} cases where `ret = 0` on Day 0.")
 
+    # List of infocode & year_ pairs where no valid trading day is found
+    failed_rdq_infocode_pairs = []
+
     # Shift `event_date` continuously until a valid `ret != 0` is found
     for index, row in zero_ret_rows.iterrows():
         new_date = row["event_date"]
+        shifted = False  # Track if shifting was successful
 
         while True:
             # Get the next available trading date with `ret != 0`
@@ -162,11 +167,24 @@ def merge_with_datastream(df_expanded, ds2dsf):
                 if new_ret != 0:
                     df_final.at[index, "event_date"] = new_date
                     df_final.at[index, "ret"] = new_ret
+                    shifted = True  # Mark as shifted
                     break  # Exit loop once a valid date is found
 
             else:
-                log.warning(f"No valid trading day found for infocode {row['infocode']} on {row['event_date']}. Keeping original.")
+                log.warning(f"No valid trading day found for infocode {row['infocode']} on {row['event_date']}. Marking for full window removal.")
+                failed_rdq_infocode_pairs.append((row["infocode"], row["year_"]))
                 break  # Exit loop if no more valid dates exist
+
+    # **NEW STEP: Remove full event windows (-3 to +3) if no valid trading day was found**
+    if failed_rdq_infocode_pairs:
+        log.warning(f"Removing full event windows for {len(failed_rdq_infocode_pairs)} earnings announcements with no valid trading day.")
+
+        # Convert list to DataFrame
+        failed_rdq_df = pd.DataFrame(failed_rdq_infocode_pairs, columns=["infocode", "year_"]).drop_duplicates()
+
+        # Remove all rows associated with these failed announcements
+        df_final = df_final.merge(failed_rdq_df, on=["infocode", "year_"], how="left", indicator=True)
+        df_final = df_final[df_final["_merge"] == "left_only"].drop(columns=["_merge"])
 
     # Drop unnecessary variables after merging
     drop_columns = ["region", "typecode", "dscode", "marketdate"]
