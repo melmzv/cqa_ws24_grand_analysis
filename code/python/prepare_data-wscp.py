@@ -32,7 +32,11 @@ def main():
 
     # Step 4: Merge with Datastream stock returns
     log.info("Merging expanded dataset with Datastream stock returns...")
-    final_dataset = merge_with_datastream(ws_expanded, ds2dsf)
+    merged_dataset = merge_with_datastream(ws_expanded, ds2dsf)
+
+    # Step 5: Select firms that meet sample criteria
+    log.info("Selecting firms that meet the sample criteria (4 announcements per year)...")
+    final_dataset = select_firms_for_sample(merged_dataset)
 
     # Save the final dataset
     final_dataset.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
@@ -196,101 +200,56 @@ def merge_with_datastream(df_expanded, ds2dsf):
     df_final = df_final.drop(columns=drop_columns, errors="ignore")
     log.info(f"Dropped unnecessary columns: {drop_columns}")
 
+    # **CHECK FOR DUPLICATES**
+    duplicate_rows = df_final[df_final.duplicated()]
+    num_duplicate_rows = len(duplicate_rows)
+
+    if num_duplicate_rows > 0:
+        log.warning(f"Found {num_duplicate_rows} duplicate rows in the dataset. Displaying the first 5 duplicate rows:")
+        log.warning(f"\n{duplicate_rows.head(5)}")  # Display first 5 duplicate rows
+
+        # Optional: Remove duplicates
+        df_final = df_final.drop_duplicates().reset_index(drop=True)
+        log.info(f"Removed duplicate rows. New dataset size: {len(df_final)}")
+
     log.info(f"Final merged dataset after adjusting `ret = 0`. Observations: {len(df_final)}")
     return df_final
 
 
-'''
-
-
-
-def filter_valid_earnings(df):
+def select_firms_for_sample(df):
     """
-    Filters out firm-year observations where:
-    1. Any of the earnings announcement dates (items 5901-5904) are missing.
-    2. All four earnings announcements must fall within the same calendar year.
-    3. All four earnings announcement dates must be in the year **≤2023**.
-    4. Removes rows where all four earnings announcement dates are identical.
-    Also, identifies the years in `marketdate` where `ret = 0` is most frequent.
+    Filters dataset to retain firms with exactly four earnings announcements per year.
+    Ensures all four announcements fall within the same calendar year and belong to unique quarters (Q1, Q2, Q3, Q4).
     """
-    initial_count = len(df)
+    log.info("Selecting firms that meet the sample criteria (4 earnings announcements per year)...")
 
-    # Drop rows where any of the quarterly earnings announcement dates are missing
-    df_filtered = df.dropna(subset=['item5901', 'item5902', 'item5903', 'item5904']).copy()
-    after_na_drop = len(df_filtered)
-    log.info(f"Dropped {initial_count - after_na_drop} rows due to missing earnings announcement dates.")
+    # Ensure `rdq` is in datetime format
+    df["rdq"] = pd.to_datetime(df["rdq"], errors="coerce")
 
-    # Convert date columns to datetime format
-    date_columns = ['item5901', 'item5902', 'item5903', 'item5904']
-    for col in date_columns:
-        df_filtered[col] = pd.to_datetime(df_filtered[col], format="%m/%d/%y", errors='coerce')
+    # Extract the announcement year from `rdq`
+    df["rdq_year"] = df["rdq"].dt.year
 
-    # Extract year from each earnings announcement
-    df_filtered['year_5901'] = df_filtered['item5901'].dt.year
-    df_filtered['year_5902'] = df_filtered['item5902'].dt.year
-    df_filtered['year_5903'] = df_filtered['item5903'].dt.year
-    df_filtered['year_5904'] = df_filtered['item5904'].dt.year
+    # Keep only observations where event_window = 0 (earnings announcement day)
+    df_event_0 = df[df["event_window"] == 0].copy()
 
-    # Ensure all four announcements fall within the same calendar year
-    df_filtered = df_filtered[
-        (df_filtered['year_5901'] == df_filtered['year_5902']) &
-        (df_filtered['year_5901'] == df_filtered['year_5903']) &
-        (df_filtered['year_5901'] == df_filtered['year_5904'])
-    ]
-    after_year_check = len(df_filtered)
-    log.info(f"Dropped {after_na_drop - after_year_check} rows due to earnings announcements spanning multiple years.")
+    # Count unique quarters per firm-year where event_window == 0
+    firm_rdq_counts = df_event_0.groupby(["infocode", "rdq_year"])["quarter"].nunique().reset_index()
 
-    # Remove firm-year observations where any date is beyond 2023
-    df_filtered = df_filtered[
-        (df_filtered['year_5901'] <= 2023) &
-        (df_filtered['year_5902'] <= 2023) &
-        (df_filtered['year_5903'] <= 2023) &
-        (df_filtered['year_5904'] <= 2023)
-    ]
-    after_2023_check = len(df_filtered)
-    log.info(f"Dropped {after_year_check - after_2023_check} rows due to earnings announcements beyond 2023.")
+    # Identify firms that have exactly 4 unique quarters (Q1, Q2, Q3, Q4)
+    valid_firms = firm_rdq_counts[firm_rdq_counts["quarter"] == 4]
 
-    # Remove rows where all four announcement dates are identical
-    before_unique_filter = len(df_filtered)
-    df_filtered = df_filtered[
-        ~((df_filtered['item5901'] == df_filtered['item5902']) &
-          (df_filtered['item5901'] == df_filtered['item5903']) &
-          (df_filtered['item5901'] == df_filtered['item5904']))
-    ]
-    after_unique_filter = len(df_filtered)
-    log.info(f"Dropped {before_unique_filter - after_unique_filter} rows where all four earnings announcements were identical.")
 
-    # Count NaN values in the 'ret' column before replacing them
-    nan_count = df_filtered['ret'].isna().sum()
-    # Replace NaN values in the 'ret' column with 0
-    df_filtered['ret'] = df_filtered['ret'].fillna(0)
-    log.info(f"Replaced {nan_count} NaN values in 'ret' column with 0.")
+    # Merge back with the main dataset to keep only these firms
+    df_filtered = df.merge(valid_firms[["infocode", "rdq_year"]], on=["infocode", "rdq_year"], how="inner")
 
-    # Convert 'marketdate' to datetime format
-    df_filtered['marketdate'] = pd.to_datetime(df_filtered['marketdate'], errors='coerce')
+    # Print the total number of unique firms after filtering
+    unique_firms_after = df_filtered["infocode"].nunique()
+    log.info(f"Total unique firms after filtering: {unique_firms_after}")
 
-    # Extract year from 'marketdate'
-    df_filtered['market_year'] = df_filtered['marketdate'].dt.year
-
-    # Count rows where ret=0
-    zero_ret_count = (df_filtered['ret'] == 0).sum()
-    log.info(f"Number of rows where 'ret' = 0: {zero_ret_count}")
-
-    # Identify years with the most occurrences of ret = 0
-    zero_ret_by_year = df_filtered[df_filtered['ret'] == 0]['market_year'].value_counts()
-    
-    log.info("Top 5 years with the most occurrences of 'ret = 0':")
-    log.info(zero_ret_by_year.head(5).to_string())
-
-    # Drop the temporary year columns
-    df_filtered = df_filtered.drop(columns=['year_5901', 'year_5902', 'year_5903', 'year_5904'])
-
-    log.info(f"Final dataset size after filtering: {len(df_filtered)}")
+    log.info(f"Retained {unique_firms_after} firms meeting sample criteria.")
 
     return df_filtered
 
-
-'''
 
 
 if __name__ == "__main__":
