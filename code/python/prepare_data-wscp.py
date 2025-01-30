@@ -123,6 +123,7 @@ def merge_with_datastream(df_expanded, ds2dsf):
     Merge expanded dataset with Datastream stock returns using `infocode` and `event_date`,
     then adjust `event_date` for missing stock returns (`ret = 0`), ensuring continuous shifting.
     If no valid trading day is found for Day 0, the entire event window (-3 to +3) is dropped.
+    Finally, removes event windows (-3, -2, +2, +3) as they are no longer needed.
     """
     log.info("Merging with Datastream stock returns...")
 
@@ -186,6 +187,10 @@ def merge_with_datastream(df_expanded, ds2dsf):
         df_final = df_final.merge(failed_rdq_df, on=["infocode", "year_"], how="left", indicator=True)
         df_final = df_final[df_final["_merge"] == "left_only"].drop(columns=["_merge"])
 
+    # **DROP EVENT WINDOWS -3, -2, +2, +3**
+    df_final = df_final[df_final["event_window"].isin([-1, 0, 1])]
+    log.info("Dropped event windows (-3, -2, +2, +3) as they are no longer needed.")
+
     # Drop unnecessary variables after merging
     drop_columns = ["region", "typecode", "dscode", "marketdate"]
     df_final = df_final.drop(columns=drop_columns, errors="ignore")
@@ -196,14 +201,7 @@ def merge_with_datastream(df_expanded, ds2dsf):
 
 
 '''
-def merge_with_datastream(ws_link_merged, ds2dsf):
-    """
-    Merge the Worldscope-linked dataset with Datastream.
-    Uses `infocode` (QA ID for Datastream) as the linking key.
-    """
-    final_merged = ws_link_merged.merge(ds2dsf, on="infocode", how="inner")
-    log.info(f"Merged with Datastream. Final observations: {len(final_merged)}")
-    return final_merged
+
 
 
 def filter_valid_earnings(df):
@@ -292,76 +290,7 @@ def filter_valid_earnings(df):
     return df_filtered
 
 
-def match_earnings_to_market_dates(df):
-    """
-    Match quarterly earnings announcement dates (item5901-4) to market trading dates per firm.
-    Assign the closest available stock return (ret) for each earnings date.
-    """
-
-    log.info("Matching earnings announcements to valid trading days...")
-
-    # Convert 'marketdate' to datetime
-    df["marketdate"] = pd.to_datetime(df["marketdate"], errors="coerce")
-
-    # Filter only necessary columns for efficiency
-    market_data = df[["infocode", "marketdate", "ret"]].drop_duplicates()
-
-    # Create a lookup dictionary {infocode: DataFrame with marketdate & ret}
-    market_lookup = {
-        infocode: group.set_index("marketdate")["ret"]
-        for infocode, group in market_data.groupby("infocode")
-    }
-
-    # Initialize new columns for matched returns and days deviation
-    for q in range(1, 5):
-        df[f"q{q}_day_0"] = pd.NaT  # Matched market date
-        df[f"q{q}_ret"] = None  # Matched return value
-        df[f"q{q}_day_0_deviation"] = None  # Days deviation
-
-    # Iterate over each row to match market dates per firm
-    for idx, row in df.iterrows():
-        infocode = row["infocode"]
-
-        if infocode not in market_lookup:
-            continue  # Skip if no market data is available
-
-        for q in range(1, 5):
-            earnings_date = row[f"item590{q}"]
-
-            if pd.isna(earnings_date):
-                continue  # Skip if earnings date is missing
-
-            earnings_date = pd.to_datetime(earnings_date)
-
-            # Find closest available market date in firm's data
-            available_dates = market_lookup[infocode].index
-            matched_date = available_dates[available_dates >= earnings_date].min()
-
-            if pd.isna(matched_date):
-                continue  # No valid market date found, leave NaN
-
-            # Assign values to the new columns
-            df.at[idx, f"q{q}_day_0"] = matched_date
-            df.at[idx, f"q{q}_ret"] = market_lookup[infocode].loc[matched_date]
-            df.at[idx, f"q{q}_day_0_deviation"] = (matched_date - earnings_date).days
-
-    log.info("Earnings announcement matching complete.")
-    return df
-
-
-def compute_deviation_statistics(df):
-    """
-    Compute summary statistics for the deviation in event window alignment.
-    """
-    log.info("Computing deviation statistics...")
-
-    deviation_stats = {
-        f"q{q}_day_0_deviation": df[f"q{q}_day_0_deviation"].mean(skipna=True)
-        for q in range(1, 5)
-    }
-
-    log.info(f"Average days deviation per quarter: {deviation_stats}")
-    return deviation_stats'''
+'''
 
 
 if __name__ == "__main__":
