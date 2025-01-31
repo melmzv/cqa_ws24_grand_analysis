@@ -89,10 +89,10 @@ def run_regressions(bhr_annual, bhr_event):
     """
     Runs annual cross-sectional regressions of calendar-year returns on 
     the four earnings-announcement window returns in the calendar year.
-    Replicates Table 2 in Ball (2008).
+    Computes Adjusted R² and Abnormal R², following Ball (2008).
     """
 
-    log.info("Running annual regressions (Fixed Version)...")
+    log.info("Running annual regressions with Abnormal R² benchmarking...")
 
     # Ensure `year_stock` column exists in BHR Event dataset
     if "year_stock" not in bhr_event.columns:
@@ -139,13 +139,17 @@ def run_regressions(bhr_annual, bhr_event):
             log.warning(f"Skipping year {year} due to Inf values in data.")
             continue
 
-        # Skip regression if no valid data is left
-        if X.shape[0] < 2:  
-            log.warning(f"Skipping year {year} due to insufficient data ({X.shape[0]} observations).")
+        # **Ensure we have enough observations for valid regression**
+        if X.shape[0] <= X.shape[1]:  
+            log.warning(f"Skipping year {year} due to insufficient observations (n={X.shape[0]}, k={X.shape[1] - 1}).")
             continue
 
         # Fit Regression Model
         model = sm.OLS(y, X).fit()
+
+        # Compute Adjusted R² & Abnormal R²
+        adj_r2 = model.rsquared_adj if model.nobs > model.df_model + 1 else np.nan
+        abnormal_r2 = adj_r2 - 0.048 if not np.isnan(adj_r2) else np.nan
 
         # Store results
         regression_results.append({
@@ -155,11 +159,23 @@ def run_regressions(bhr_annual, bhr_event):
             "Q2": model.params.get("BHR_Q2", np.nan),
             "Q3": model.params.get("BHR_Q3", np.nan),
             "Q4": model.params.get("BHR_Q4", np.nan),
-            "Adj_R²": model.rsquared_adj,
+            "Adj_R²": adj_r2,
+            "Abnormal R²": abnormal_r2,  # New column
             "No. Obs.": len(final_data)
         })
 
-    return pd.DataFrame(regression_results)
+    results_df = pd.DataFrame(regression_results)
+
+    # **Fill NaN Adj_R² with a marker (-999) if needed**
+    results_df["Adj_R²"] = results_df["Adj_R²"].fillna(-999)
+    results_df["Abnormal R²"] = results_df["Abnormal R²"].fillna(-999)
+
+    # Display the output
+    print("\nRegression Results with Abnormal R²:\n", results_df.round(3).to_string(index=False))    
+
+    return results_df
+
+
 
 if __name__ == "__main__":
     main()
