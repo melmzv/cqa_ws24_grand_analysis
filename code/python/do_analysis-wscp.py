@@ -87,25 +87,19 @@ def compute_summary_statistics(bhr_annual_results, bhr_event_results):
 
 def run_regressions(bhr_annual, bhr_event):
     """
-    Performs annual cross-sectional regressions of calendar-year returns on 
+    Runs annual cross-sectional regressions of calendar-year returns on 
     the four earnings-announcement window returns in the calendar year.
     Replicates Table 2 in Ball (2008).
     """
 
-    log.info("Running annual regressions (Table 2 format)...")
+    log.info("Running annual regressions (Fixed Version)...")
 
-    # **Ensure `year_stock` column exists in BHR Event dataset**
+    # Ensure `year_stock` column exists in BHR Event dataset
     if "year_stock" not in bhr_event.columns:
         bhr_event["year_stock"] = pd.to_datetime(bhr_event["rdq"]).dt.year
-        log.info("Added `year_stock` column to BHR Event dataset.")
 
-    # Print column names for debugging
-    log.info(f"BHR Annual Columns: {bhr_annual.columns.tolist()}")
-    log.info(f"BHR Event Columns: {bhr_event.columns.tolist()}")
-
-    # Merge datasets correctly
+    # Merge annual and event datasets
     merged_data = bhr_annual.merge(bhr_event, on=["infocode", "year_stock"], how="inner")
-    log.info(f"Merged dataset for regression. Total observations: {len(merged_data)}")
 
     # Run regressions for each year
     regression_results = []
@@ -132,9 +126,18 @@ def run_regressions(bhr_annual, bhr_event):
         X = final_data[independent_vars]
         y = final_data["BHR_Annual"]
 
-        # **Handle missing quarters by filling NaN with 0** (otherwise regression may fail)
-        X = X.fillna(0)
+        # **Fix Missing Values in Independent Variables**
+        X = X.fillna(0)  # Replace NaNs with 0
         X = sm.add_constant(X)  # Add intercept
+
+        # **Check for NaNs or Infs in y or X**
+        if X.isna().any().any() or y.isna().any():
+            log.warning(f"Skipping year {year} due to NaNs in data.")
+            continue
+
+        if np.isinf(X).any().any() or np.isinf(y).any():
+            log.warning(f"Skipping year {year} due to Inf values in data.")
+            continue
 
         # Skip regression if no valid data is left
         if X.shape[0] < 2:  
@@ -156,11 +159,7 @@ def run_regressions(bhr_annual, bhr_event):
             "No. Obs.": len(final_data)
         })
 
-    # Convert to DataFrame
-    df_regression = pd.DataFrame(regression_results)
-    log.info("Completed annual regressions.")
-
-    return df_regression
+    return pd.DataFrame(regression_results)
 
 if __name__ == "__main__":
     main()
