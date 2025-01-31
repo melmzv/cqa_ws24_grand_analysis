@@ -41,6 +41,9 @@ def main():
     # Step 6: Compute and Save BHR (Event Window)
     bhr_event_results = compute_and_save_eawr_bhr(final_dataset, cfg)
 
+    # Step 7: Extract annual stock return data for firms in BHR Event dataset
+    annual_stock_data = extract_annual_stock_data(bhr_event_results, ds2dsf, cfg)
+
     # Step 8: Save the final dataset (full dataset with event windows)
     final_dataset.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
     final_dataset.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
@@ -296,7 +299,7 @@ def compute_and_save_eawr_bhr(df, cfg):
 
     log.info(f"Computed {len(df_bhr)} earnings announcement window returns. Quarter column is retained.")
 
-    # **SAVE THE OUTPUT**
+    # SAVE THE OUTPUT
     # Keep only relevant columns (Include `quarter` for regression use)
     df_bhr_filtered = df_bhr[["infocode", "rdq", "quarter", "BHR_3day"]]
 
@@ -312,6 +315,70 @@ def compute_and_save_eawr_bhr(df, cfg):
 
     return df_bhr
 
+def extract_annual_stock_data(bhr_event_results, ds2dsf, cfg):
+    """
+    Extracts annual stock return data for firms present in the BHR Event dataset.
+    Ensures that stock data only contains the same infocodes and years as in BHR Event.
+    Saves the filtered dataset for computing annual buy-and-hold returns.
+    """
+    log.info("Extracting annual stock return data...")
+
+    ## Extract Unique Firms & Years from BHR Event Dataset
+    selected_firms = bhr_event_results[["infocode", "rdq"]].copy()
+    selected_firms["year_bhr"] = pd.to_datetime(selected_firms["rdq"]).dt.year  # Extract year from `rdq`
+    # Drop duplicates to ensure unique firm-year pairs
+    selected_firms = selected_firms.drop_duplicates(subset=["infocode", "year_bhr"])  
+    log.info(f"Selected {len(selected_firms)} unique firm-year pairs from BHR Event dataset.")
+    log.info(f"Sample of firm-year pairs:\n{selected_firms.head(20).to_string()}")
+
+    ## Load Full Stock Dataset (Unfiltered Datastream Data)
+    ds2dsf["marketdate"] = pd.to_datetime(ds2dsf["marketdate"], errors="coerce")  # Ensure datetime format
+    ds2dsf["year_stock"] = ds2dsf["marketdate"].dt.year  # Extract year for filtering
+    log.info(f" Total records in stock return dataset: {len(ds2dsf)}")
+
+    ## FILTER Stock Data (Strict Matching on infocode & year)
+    filtered_stock_data = ds2dsf[
+        ds2dsf["infocode"].isin(selected_firms["infocode"])
+    ].copy()
+
+    # Now filter the years based on firm-specific years from BHR Event dataset
+    filtered_stock_data = filtered_stock_data.merge(
+        selected_firms, 
+        left_on=["infocode", "year_stock"], 
+        right_on=["infocode", "year_bhr"], 
+        how="inner"
+    ).drop(columns=["year_bhr"])  # Remove duplicate column after merging
+
+    log.info(f" Filtered stock data. Remaining records: {len(filtered_stock_data)}")
+    log.info(f" Sample of filtered stock data:\n{filtered_stock_data.head(10).to_string()}")
+
+    ## Ensure No Missing Firms/Years
+    missing_firm_years = selected_firms[~selected_firms.set_index(["infocode", "year_bhr"]).index.isin(
+        filtered_stock_data.set_index(["infocode", "year_stock"]).index
+    )]
+
+    if not missing_firm_years.empty:
+        log.warning(f"⚠️ {len(missing_firm_years)} firm-year pairs are **missing** from the filtered stock dataset.")
+        log.warning(f"⚠️ Sample missing firm-years:\n{missing_firm_years.head(10).to_string()}")
+
+    else:
+        log.info(f" All firm-year pairs from BHR Event dataset are fully covered in stock data.")
+
+    ## 5️⃣ Keep Only Relevant Columns
+    relevant_columns = ["marketdate", "infocode", "ret", "year_stock", "rdq"]
+    filtered_stock_data = filtered_stock_data[relevant_columns]
+
+    ## Save the Filtered Dataset
+    annual_stock_csv_path = cfg["annual_stock_data_csv"]
+    annual_stock_parquet_path = cfg["annual_stock_data_parquet"]
+
+    filtered_stock_data.to_csv(annual_stock_csv_path, index=False)
+    filtered_stock_data.to_parquet(annual_stock_parquet_path, index=False)
+
+    log.info(f"Final row count of filtered annual stock data: {len(filtered_stock_data)}")
+    log.info(f"Annual stock data saved to:\n- {annual_stock_csv_path} (CSV)\n- {annual_stock_parquet_path} (Parquet).")
+
+    return filtered_stock_data
 
 if __name__ == "__main__":
     main()

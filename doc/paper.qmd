@@ -243,6 +243,8 @@ First, I merged Worldscope stock data with the linking table using `code` as uni
 
 If a firm had missing values for any of the Earnings Per Share Report Date fields (item5901–item5904), it did not meet the criteria set by @ball_how_2008 and was excluded from the sample. This filtering step removed 3,609,492 missing firm-year observations. Additionally, 5,996,793 firm-year entries were dropped because their four earnings announcements did not fall within the same calendar year. The final dataset consists of only 616,980 valid firm-year observations, starting in 1996 only, signaling the potential difference in the accounting reporting standards between the U.S. and Canada.
 
+Notably, after pulling the annual stock data for further annual return calculation, all infocodes present an average of 250 trading days, highlighting full year stock coverage.
+
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
 
 
