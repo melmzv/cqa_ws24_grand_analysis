@@ -44,7 +44,10 @@ def main():
     # Step 7: Extract annual stock return data for firms in BHR Event dataset
     annual_stock_data = extract_annual_stock_data(bhr_event_results, ds2dsf, cfg)
 
-    # Step 8: Save the final dataset (full dataset with event windows)
+    # Step 8: Compute and Save BHR (Annual Return)
+    bhr_annual_results = compute_and_save_annual_bhr(cfg)
+
+    # Step 9: Save the final dataset (full dataset with event windows)
     final_dataset.to_csv(cfg['prepared_wrds_ds2dsf_path'], index=False)
     final_dataset.to_parquet(cfg['prepared_wrds_ds2dsf_parquet'], index=False)
 
@@ -379,6 +382,68 @@ def extract_annual_stock_data(bhr_event_results, ds2dsf, cfg):
     log.info(f"Annual stock data saved to:\n- {annual_stock_csv_path} (CSV)\n- {annual_stock_parquet_path} (Parquet).")
 
     return filtered_stock_data
+
+def compute_and_save_annual_bhr(cfg):
+    """
+    Computes the Annual Buy-and-Hold Return (BHR_Annual) using daily stock returns.
+    Retains the `year_stock` column and saves the output directly to CSV & Parquet.
+    """
+    log.info("Computing and saving Annual Buy-and-Hold Returns (BHR_Annual)...")
+
+    # Load the filtered annual stock data
+    annual_stock_data = pd.read_csv(cfg["annual_stock_data_csv"])
+    log.info(f"Loaded annual stock data. Total records: {len(annual_stock_data)}")
+
+    # Ensure `marketdate` is in datetime format
+    annual_stock_data["marketdate"] = pd.to_datetime(annual_stock_data["marketdate"], errors="coerce")
+
+    # Sort data for correct computation order
+    annual_stock_data = annual_stock_data.sort_values(by=["infocode", "year_stock", "marketdate"])
+
+    # Verify available years
+    log.info("Sample of available years in the dataset:")
+    log.info(annual_stock_data["year_stock"].value_counts().sort_index())
+
+    # Compute Buy-and-Hold Annual Return (BHR_Annual)
+    bhr_annual_results = []
+
+    for (infocode, year_stock), group in annual_stock_data.groupby(["infocode", "year_stock"]):
+        try:
+            # Ensure sorted data for proper calculation
+            group = group.sort_values(by="marketdate")
+
+            # Compute BHR_Annual using cumulative product of (1 + daily return) - 1
+            bhr_annual = (group["ret"] + 1).prod() - 1
+
+            # Append results
+            bhr_annual_results.append({
+                "infocode": infocode,
+                "year_stock": year_stock,
+                "BHR_Annual": bhr_annual
+            })
+        except Exception as e:
+            log.warning(f"Skipping {infocode} for {year_stock} due to missing data: {e}")
+
+    # Convert results to DataFrame
+    df_bhr_annual = pd.DataFrame(bhr_annual_results)
+
+    log.info(f"Computed {len(df_bhr_annual)} annual buy-and-hold returns.")
+
+    # Save the output
+    # Keep only relevant columns
+    df_bhr_annual_filtered = df_bhr_annual[["infocode", "year_stock", "BHR_Annual"]]
+
+    # Save dataset paths from config
+    bhr_annual_csv_path = cfg["bhr_annual_output_csv"]
+    bhr_annual_parquet_path = cfg["bhr_annual_output_parquet"]
+
+    # Save as CSV and Parquet
+    df_bhr_annual_filtered.to_csv(bhr_annual_csv_path, index=False)
+    df_bhr_annual_filtered.to_parquet(bhr_annual_parquet_path, index=False)
+
+    log.info(f"BHR Annual dataset saved to:\n- {bhr_annual_csv_path} (CSV)\n- {bhr_annual_parquet_path} (Parquet).")
+
+    return df_bhr_annual
 
 if __name__ == "__main__":
     main()
