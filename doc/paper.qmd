@@ -24,7 +24,7 @@ format:
     number-sections: true
     toc: true
     lof: true  # Enables List of Figures
-    lot: true  # Enables List of Tables
+    lot: false  # Disables List of Tables
 fig_caption: yes
 fontsize: 11pt
 ident: yes
@@ -116,7 +116,9 @@ By following the steps outlined in @sec-replication_steps1 and adhering to the a
 The analysis involves gathering and filtering stock return and earnings announcement data, linking CRSP stock data with Compustat firm-level accounting data fundamentals, and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
 
 **Step 1: Pulling the Data and Managing the Databases**  
-Data is pulled from WRDS using Python to integrate daily stock returns from CRSP (`crsp_a_stock.dsf`) with quarterly earnings announcement data from Compustat (`comp_na_daily_all.fundq`), linked via the Compustat-CRSP link table (`crsp_a_ccm.ccmxpf_lnkhist`). `permno` unique identifier matches stock returns to firm fundamentals via `gvkey` for exact firm/year match. Key variables include `ret` (daily stock return) and `rdq` (earnings announcement date), enabling event study analysis from 1972 to 2023. While WRDS provides extensive financial datasets, documentation on precise variable selection and dataset integration is limited, requiring additional validation and cross-referencing with prior research. The data is pulled for the entire range 1972-2023 required for Task 1 and 2 to prevent double preparation step.
+Data is pulled from WRDS using Python to integrate daily stock returns from CRSP (`crsp_a_stock.dsf`) with quarterly earnings announcement data from Compustat  
+(`comp_na_daily_all.fundq`), linked via the Compustat-CRSP link table  
+(`crsp_a_ccm.ccmxpf_lnkhist`). `permno` unique identifier matches stock returns to firm fundamentals via `gvkey` for exact firm/year match. Key variables include `ret` (daily stock return) and `rdq` (earnings announcement date), enabling event study analysis from 1972 to 2023. While WRDS provides extensive financial datasets, documentation on precise variable selection and dataset integration is limited, requiring additional validation and cross-referencing with prior research. The data is pulled for the entire range 1972-2023 required for Task 1 and 2 to prevent double preparation step.
 
 **Step 2: Data Preparation**  
 Although not finished, the plan would be as follows: The merged dataset would integrate stock return data from CRSP (`crsp_daily_stock_returns`), firm fundamentals from Compustat (`compustat_fundq_1972_2023`), and the CRSP-Compustat linking table (`linkdata_compustat_crsp.parquet`). The `PERMNO` identifier from CRSP and `GVKEY` from Compustat are connected via `LPERMNO` in the linking table, ensuring correct firm-year alignment. Unnecessary variables from linked table, such as `linkprim`, `liid`, `linktype`, and `usedflag`, are dropped. The resulting dataset would retain only daily stock returns (`ret`), earnings announcement dates (`rdq`), fiscal year-end indicators (`fyr`), and firm identifiers (`permno, gvkey`), used further for Buy-and-Hold Returns (BHR) calculation and regression analysis.
@@ -135,12 +137,16 @@ $$
 
 Specifically, buy-and-hold return over the three-day event window, that measures the stock’s reaction only to earnings news, is computed as given below:
 $$
-BHR_{\text{annual}} = (1 + R_{t_1}) (1 + R_{t_2}) \dots (1 + R_{t_T}) - 1, \quad \text{where } R_t \text{ is the daily return and } T \text{ is the total trading days in a year.}
+\begin{aligned}
+BHR_{\text{event}} &= (1 + R_{t_1}) (1 + R_{t_2}) \dots (1 + R_{t_T}) - 1
+\\
+\text{where } R_t & \text{ is the daily return and } T \text{ is the total trading days in a year.}
+\end{aligned}
 $$
 
 Next, perform cross-sectional regression for each firm/year - the main objective of @ball_how_2008's research:
 $$
-R_{\text{annual}} = \alpha_0 + \alpha_1 R_{\text{event}_1} + \alpha_2 R_{\text{event}_2} + \alpha_3 R_{\text{event}_3} + \alpha_4 R_{\text{event}_4} + \epsilon_i
+R_i(\text{annual}) = a_0 + a_1 R_i(\text{window1}) + a_2 R_i(\text{window2}) + a_3 R_i(\text{window3}) + a_4 R_i(\text{window4}) + \varepsilon_i
 $$
 
 The DV (BHR_annual) is the firm’s calendar-year buy-and-hold return from CRSP, aggregated over all trading days, while the IVs (BHR_event) are the four quarterly earnings-announcement returns, computed as three-day buy-and-hold returns (-1, 0, +1) around each earnings announcement date (RDQ) from Compustat. Additionally, I compute abnormal R^2 by benchmarking the adjusted  R^2  from annual regressions against the 4.8% baseline. This lays the ground for Table 2 replication.
@@ -232,7 +238,7 @@ From this cleaned dataset, BHR event returns are computed. Then, annual stock re
 I conduct the earnings informativeness analysis by computing summary statistics (Table 1), running annual regressions (Table 2), and generating a replication of Figure 1. First, I loaded the computed event-window and annual buy-and-hold returns (BHR_3day, BHR_Annual) and produced summary statistics similar to @ball_how_2008. Next, I performed annual cross-sectional regressions of stock returns on earnings-announcement returns, benchmarking against an Abnormal R² (adjusted R² minus 4.8%), while handling missing data and ensuring a valid number of observations per year. Finally, the script plots Figure 1, visualizing Abnormal R² trends (Panel A) and slope coefficients (Panel B) over time, saving it as both a PNG and a pickle file for further use.
 
 ## Results {#sec-results3}
-Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies. The original figure shows a general upward trend in abnormal  R^2 , peaking in the early 2000s, whereas the replicated figure captures greater volatility in the later years (2010–2023). Additionally, Ball’s figure suggests a smoother long-term dynamic, while the replication exhibits more pronounced fluctuations, particularly post-2010. Panel B in replicated figure exhibits higher volatility and larger coefficient magnitudes, suggesting increased earnings informativeness post-2006, while Ball’s original figure has more stable and lower-magnitude coefficients.
+Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies. The original figure shows a general upward trend in abnormal  R² , peaking in the early 2000s, whereas the replicated figure captures greater volatility in the later years (2010–2023). Additionally, Ball’s figure suggests a smoother long-term dynamic, while the replication exhibits more pronounced fluctuations, particularly post-2010. Panel B in replicated figure exhibits higher volatility and larger coefficient magnitudes, suggesting increased earnings informativeness post-2006, while Ball’s original figure has more stable and lower-magnitude coefficients.
 
 The post-2000 period in the replication shows more inconsistent abnormal  R^2  values, possibly reflecting evolving market structures, shifts in disclosure practices, and increased earnings informativeness following regulatory changes (e.g., IFRS adoption, post-SOX adjustments, different financial market structure). The pronounced fluctuations could also be driven by global financial crisis, Canada's higher market concentration, fewer publicly traded firms, and potential regulatory differences, which may affect earnings informativeness and stock return patterns. The variability in slope coefficients further suggests that earnings announcements’ impact on stock returns is less stable than in prior decades, potentially due to differences in investor response.
 
