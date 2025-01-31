@@ -245,12 +245,30 @@ If a firm had missing values for any of the Earnings Per Share Report Date field
 Notably, after pulling the annual stock data for further annual return calculation, all infocodes present an average of 250 trading days, highlighting full year stock coverage.
 
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
-
+rrrr
 
 ## Results {#sec-results3}
 Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
 
 qqq Comparing the replication results from Task 1&2 (see @ and @) with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
+
+```{python}
+#| label: fig-abnormal-r2
+#| fig-cap: "Replicated Figure 1: Abnormal Adjusted R² Values and Slope Coefficients from Annual Regressions"
+#| fig-align: center
+#| echo: false
+
+import pickle
+import matplotlib.pyplot as plt
+
+# Load the figure from the pickle file
+with open('../output/figure1_replication.pickle', 'rb') as f:
+    fig = pickle.load(f)
+
+# Render the figure explicitly
+plt.figure(fig.number)
+plt.show()
+```
 
 # Task 4 - Research Design for a Non-Archival Study {#sec-task4}
 
