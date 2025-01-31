@@ -232,9 +232,9 @@ From this cleaned dataset, BHR event returns are computed. Then, annual stock re
 I conduct the earnings informativeness analysis by computing summary statistics (Table 1), running annual regressions (Table 2), and generating a replication of Figure 1. First, I loaded the computed event-window and annual buy-and-hold returns (BHR_3day, BHR_Annual) and produced summary statistics similar to @ball_how_2008. Next, I performed annual cross-sectional regressions of stock returns on earnings-announcement returns, benchmarking against an Abnormal R² (adjusted R² minus 4.8%), while handling missing data and ensuring a valid number of observations per year. Finally, the script plots Figure 1, visualizing Abnormal R² trends (Panel A) and slope coefficients (Panel B) over time, saving it as both a PNG and a pickle file for further use.
 
 ## Results {#sec-results3}
-Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
+Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies. The original figure shows a general upward trend in abnormal  R^2 , peaking in the early 2000s, whereas the replicated figure captures greater volatility in the later years (2010–2023). Additionally, Ball’s figure suggests a smoother long-term dynamic, while the replication exhibits more pronounced fluctuations, particularly post-2010. Panel B in replicated figure exhibits higher volatility and larger coefficient magnitudes, suggesting increased earnings informativeness post-2006, while Ball’s original figure has more stable and lower-magnitude coefficients.
 
-qqq Comparing the replication results from Task 1&2 (see @ and @) with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
+The post-2000 period in the replication shows more inconsistent abnormal  R^2  values, possibly reflecting evolving market structures, shifts in disclosure practices, and increased earnings informativeness following regulatory changes (e.g., IFRS adoption, post-SOX adjustments, different financial market structure). The pronounced fluctuations could also be driven by global financial crisis, Canada's higher market concentration, fewer publicly traded firms, and potential regulatory differences, which may affect earnings informativeness and stock return patterns. The variability in slope coefficients further suggests that earnings announcements’ impact on stock returns is less stable than in prior decades, potentially due to differences in investor response.
 
 ```{python}
 #| label: fig-abnormal-r2
@@ -253,8 +253,6 @@ with open('../output/figure1_replication.pickle', 'rb') as f:
 plt.figure(fig.number)
 plt.show()
 ```
-
-qqq we confirm? "The results are consistent with the view that the primary economic role of reported earnings is not to provide timely new information to the share market. By inference, that role lies elsewhere, for example, in settling debt and compensation contracts and in disciplining prior information,including more timely managerial disclosures of information originating in the firm’s accounting system. The comparatively low “surprise” content of earnings announcements is to be expected, for a variety of reasons. By its nature, accounting earnings is low frequency (quarterly), not discretionary (announced every quarter, independent of whether there is substantial new information to report), and primarily backward-looking. Other information, and hence revision in share price, is comparatively high frequency, frequently discretionary (released only when there is substantial information to report), and both forward-looking and backward-looking."
 
 # Task 4 - Research Design for a Non-Archival Study {#sec-task4}
 
