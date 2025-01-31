@@ -116,9 +116,7 @@ By following the steps outlined in @sec-replication_steps1 and adhering to the a
 The analysis involves gathering and filtering stock return and earnings announcement data, linking CRSP stock data with Compustat firm-level accounting data fundamentals, and estimating the relationship between annual returns and earnings-announcement window returns. The replication process follows a structured workflow of data pull, preparation, and analysis, ensuring consistency with the original study.
 
 **Step 1: Pulling the Data and Managing the Databases**  
-Data is pulled from WRDS using Python to integrate daily stock returns from CRSP (`crsp_a_stock.dsf`) with quarterly earnings announcement data from Compustat (`comp_na_daily_all.fundq`), linked via the Compustat-CRSP link table (`crsp_a_ccm.ccmxpf_lnkhist`). `permno` identifier matches stock returns to firm fundamentals via `gvkey` for exact firm/year match. Key variables include `ret` (daily stock return) and `rdq` (earnings announcement date), enabling event study analysis from 1972 to 2023. While WRDS provides extensive financial datasets, documentation on precise variable selection and dataset integration is limited, requiring additional validation and cross-referencing with prior research.
-
-The data is pulled for the entire range 1972-2023 required for Task 1 and 2 to prevent double preparation step.
+Data is pulled from WRDS using Python to integrate daily stock returns from CRSP (`crsp_a_stock.dsf`) with quarterly earnings announcement data from Compustat (`comp_na_daily_all.fundq`), linked via the Compustat-CRSP link table (`crsp_a_ccm.ccmxpf_lnkhist`). `permno` unique identifier matches stock returns to firm fundamentals via `gvkey` for exact firm/year match. Key variables include `ret` (daily stock return) and `rdq` (earnings announcement date), enabling event study analysis from 1972 to 2023. While WRDS provides extensive financial datasets, documentation on precise variable selection and dataset integration is limited, requiring additional validation and cross-referencing with prior research. The data is pulled for the entire range 1972-2023 required for Task 1 and 2 to prevent double preparation step.
 
 
 **Step 2: Data Preparation**  
@@ -245,7 +243,7 @@ If a firm had missing values for any of the Earnings Per Share Report Date field
 Notably, after pulling the annual stock data for further annual return calculation, all infocodes present an average of 250 trading days, highlighting full year stock coverage.
 
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
-rrrr
+
 
 ## Results {#sec-results3}
 Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.

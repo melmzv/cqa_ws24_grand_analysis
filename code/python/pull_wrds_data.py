@@ -55,17 +55,18 @@ def get_wrds_login():
             'Please provide a WRDS password (it will not show as you type): ')
         return {'wrds_username': wrds_username, 'wrds_password': wrds_password}
 
-### LINKDATA Compustat/CRSP
 def pull_link_data(db):
-    log.info("Pulling link data Compustat/CRSP ...")
+    """
+    Pulls the linking table between Compustat and CRSP from WRDS.
+    """
     linkdata_df_wrds = db.get_table(library="crsp_a_ccm", table="ccmxpf_linktable")
     linkdata_df_wrds.to_parquet("data/pulled/linkdata_compustat_crsp.parquet")
     log.info("Pulling link data Compustat/CRSP... Done!")
 
-### CRSP DATA
 def pull_crsp_data(cfg, db):
-    log.info("Pulling CRSP data ...")
-    
+    """
+    Pulls daily stock return data from the CRSP database on WRDS.
+    """    
     # Prepare crsp_filter and crsp_vars
     crsp_vars = ', '.join(cfg['crsp_vars']) if cfg.get('crsp_vars') else "*"
     crsp_filter = ' AND '.join(cfg['crsp_filter']) if cfg.get('crsp_filter') else '1=1'
@@ -79,10 +80,10 @@ def pull_crsp_data(cfg, db):
 
     log.info("Pulling CRSP data ... Done!")
 
-### COMPUSTAT DATA
 def pull_compustat_data(cfg, db):
-    log.info("Pulling Compustat data ...")
-    
+    """
+    Pulls quarterly fundamental data from the Compustat database on WRDS.
+    """
     # Prepare fundq_filter and fundq_vars
     fundq_vars = ', '.join(cfg['fundq_vars']) if cfg.get('fundq_vars') else "*"
     fundq_filter = ' AND '.join(cfg['fundq_filter']) if cfg.get('fundq_filter') else '1=1'

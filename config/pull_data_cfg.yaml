@@ -17,7 +17,7 @@ fundq_vars:
   - conm  # Company name
   - tic  # Ticker symbol
   - rdq  # Reported Date for Earnings Announcements - for Earnings Announcement Definition
-  - fyr  # Fiscal Year-End Indicator
+  - fyr  # Fiscal Year-End Indicator (Table 2 Panel C-D Replication)
 fundq_filter: 
 fundq_save_path: 'data/pulled/compustat_fundq_1972_2023.parquet'
 fundq_save_path_csv: 'data/pulled/compustat_fundq_1972_2023.csv'
