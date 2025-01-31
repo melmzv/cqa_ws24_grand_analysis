@@ -126,7 +126,7 @@ After defining the event windows for each earnings announcement day in Q1-Q4, re
 **Step 3: Analysis Implementation and Reproduction of Tables and Figure**  
 The analysis step computes the BHR returns and performs a cross-sectional regression for each distinct firm/year. 
 
-Since @ball_how_2008 do not explicitly describe their return computation, I compute Buy-and-Hold Returns (BHR) following the cumulative return formula as discussed in @gundersen_returns_2022. The BHR formula captures compounded returns over multiple days, reflecting the stock’s actual performance.
+Since @ball_how_2008 do not explicitly describe their return computation, I compute Buy-and-Hold Returns (BHR) following the cumulative return formula as discussed in @gundersen_returns_2022. The BHR formula captures compounded returns over multiple days, reflecting the stock’s actual performance, which is used to replicate Table 1.
 
 The following formula is used to calculate calendar-year buy-and-hold returns, that measures the stock’s total performance over the year for each firm using daily CRSP returns:
 $$
@@ -143,9 +143,7 @@ $$
 R_{\text{annual}} = \alpha_0 + \alpha_1 R_{\text{event}_1} + \alpha_2 R_{\text{event}_2} + \alpha_3 R_{\text{event}_3} + \alpha_4 R_{\text{event}_4} + \epsilon_i
 $$
 
-The DV (BHR_annual) is the firm’s calendar-year buy-and-hold return from CRSP, aggregated over all trading days, while the IVs (BHR_event) are the four quarterly earnings-announcement returns, computed as three-day buy-and-hold returns (-1, 0, +1) around each earnings announcement date (RDQ) from Compustat. Additionally, I compute abnormal  R^2 by benchmarking the adjusted  R^2  from annual regressions against the 4.8% baseline.
-
-The analysis also includes the creation of a bar chart visualizing market shares for all countries and the EU aggregate, saved in both PNG and pickle formats. The aggregated market share data is saved in CSV format, ensuring reproducibility and further analysis opportunities.
+The DV (BHR_annual) is the firm’s calendar-year buy-and-hold return from CRSP, aggregated over all trading days, while the IVs (BHR_event) are the four quarterly earnings-announcement returns, computed as three-day buy-and-hold returns (-1, 0, +1) around each earnings announcement date (RDQ) from Compustat. Additionally, I compute abnormal  R^2 by benchmarking the adjusted  R^2  from annual regressions against the 4.8% baseline. This lays the ground for Table 2 replication.
 
 
 ## Results {#sec-results1}
