@@ -1,8 +1,9 @@
 # We start by loading the libraries that we will use in this analysis.
 import os
+import pickle
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt#
+import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from utils import read_config, setup_logging
 
@@ -175,45 +176,56 @@ def run_regressions(bhr_annual, bhr_event):
     return results_df
 
 def plot_figure1(results_df, save_path, pickle_path):
-    """
-    Replicates Figure 1 from Ball (2008), including:
-    - Panel A: Abnormal Adjusted R² over time
-    - Panel B: Slope Coefficients for Q1, Q2, Q3, Q4 over time
-    """
+    """Replicates Figure 1 from Ball (2008) and saves it as PNG and Pickle."""
 
     log.info("Generating Figure 1 replication...")
 
-    # **Panel A: Abnormal Adjusted R²**
-    plt.figure(figsize=(10, 8))
+    # Create figure
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8), gridspec_kw={'height_ratios': [1, 1]})
 
-    plt.subplot(2, 1, 1)  # 2 rows, 1 column, 1st subplot
-    abnormal_r2 = results_df["Abnormal R²"] * 100  # Convert to percentage
-    plt.plot(results_df["Year"], abnormal_r2, marker="o", linestyle="-", color="black")
-    plt.axhline(y=0, color="gray", linestyle="--")
-    plt.xlabel("Year")
-    plt.ylabel("Abnormal Adj. R² (%)")
-    plt.title("Panel A: Abnormal Adjusted R² Over Time")
-    plt.grid(True)
+    # **Panel A: Abnormal Adjusted R²**
+    abnormal_r2 = results_df["Abnormal R²"] * 100  
+    axes[0].plot(results_df["Year"], abnormal_r2, marker="o", linestyle="-", color="black")
+    axes[0].axhline(y=0, color="gray", linestyle="--")
+    axes[0].set_xlabel("Year")
+    axes[0].set_ylabel("Abnormal Adj. R² (%)")
+    axes[0].set_title("Panel A: Abnormal adjusted R² values from annual cross-sectional regressions\n"
+                      "calendar-year arithmetic returns on arithmetic returns\n"
+                      "at the four quarterly earnings announcements")
+    axes[0].grid(True)
 
     # **Panel B: Slope Coefficients**
-    plt.subplot(2, 1, 2)  # 2 rows, 1 column, 2nd subplot
-    plt.plot(results_df["Year"], results_df["Q1"], label="Quarter 1", linestyle="dashed", color="black")
-    plt.plot(results_df["Year"], results_df["Q2"], label="Quarter 2", linestyle="solid", color="gray")
-    plt.plot(results_df["Year"], results_df["Q3"], label="Quarter 3", linestyle="dotted", color="black")
-    plt.plot(results_df["Year"], results_df["Q4"], label="Quarter 4", linestyle="dashdot", color="gray")
+    axes[1].plot(results_df["Year"], results_df["Q1"], label="Quarter 1", linestyle="solid", color="black", linewidth=2)  
+    axes[1].plot(results_df["Year"], results_df["Q2"], label="Quarter 2", linestyle="dashed", color="black", linewidth=1.5)  
+    axes[1].plot(results_df["Year"], results_df["Q3"], label="Quarter 3", linestyle="solid", color="black", linewidth=1)  
+    axes[1].plot(results_df["Year"], results_df["Q4"], label="Quarter 4", linestyle=(0, (3, 1, 1, 1)), color="black", linewidth=1.5)  
 
-    plt.xlabel("Year")
-    plt.ylabel("Slope Coefficients")
-    plt.title("Panel B: Slope Coefficients by Quarter")
-    plt.legend()
-    plt.grid(True)
+    axes[1].set_xlabel("Year")
+    axes[1].set_ylabel("Slope Coefficients")
+    axes[1].set_title("Panel B: Slope coefficients from annual cross-sectional regressions\n"
+                      "of calendar-year arithmetic returns on arithmetic returns\n"
+                      "at the four quarterly earnings announcements in the calendar year")
+    axes[1].grid(True)
 
-    # Save Figure
+    # **Move Legend Outside the Plot**
+    legend = axes[1].legend(frameon=True, edgecolor="black", loc="upper left", bbox_to_anchor=(1.02, 1))
+
+
+    # Ensure directory exists before saving
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    os.makedirs(os.path.dirname(pickle_path), exist_ok=True)
+
+    # Save PNG
     plt.tight_layout()
-    plt.savefig(save_path)
-    plt.show()
+    plt.savefig(save_path, bbox_extra_artists=(legend,), bbox_inches='tight')
+    log.info(f"Figure saved to {save_path}")
 
-    log.info(f"Figure 1 replication saved to {save_path}")
+    # Save as Pickle
+    if fig is not None:
+        with open(pickle_path, "wb") as f:
+            pickle.dump(fig, f)
+        log.info(f"Figure saved as pickle to {pickle_path}")
+
 
 
 if __name__ == "__main__":
