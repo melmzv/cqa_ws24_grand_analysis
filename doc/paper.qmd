@@ -253,6 +253,24 @@ Comparing the replication results with those from @ball_how_2008 (see @fig-fig1_
 
 qqq Comparing the replication results from Task 1&2 (see @ and @) with those from @ball_how_2008 (see @fig-fig1_original) reveals both similarities and discrepancies.
 
+```{python}
+#| label: fig-abnormal-r2
+#| fig-cap: "Replicated Figure 1: Abnormal Adjusted R² Values and Slope Coefficients from Annual Regressions"
+#| fig-align: center
+#| echo: false
+
+import pickle
+import matplotlib.pyplot as plt
+
+# Load the figure from the pickle file
+with open('../output/figure1_replication.pickle', 'rb') as f:
+    fig = pickle.load(f)
+
+# Render the figure explicitly
+plt.figure(fig.number)
+plt.show()
+```
+
 # Task 4 - Research Design for a Non-Archival Study {#sec-task4}
 
 The research design follows the generalization goal in empirical literature, emphasizing the need to validate findings across different methods [@bloomfield_gathering_2016]. @ball_how_2008 assess earnings informativeness through stock price reactions, but triangulation—beyond replication—requires diverse methods to examine the same question [@bloomfield_gathering_2016, p.353]. While price reactions indicate market response, they do not capture investor perceptions. A survey directly evaluates whether market participants view earnings announcements as confirmatory or informative. If investors confirm a secondary role, it reinforces Ball and Shivakumar’s (2008) findings, ensuring informativeness reflects cognitive and behavioral mechanisms rather than price fluctuations. These insights could inform corporate reporting strategies by clarifying how investors prioritize disclosures.
