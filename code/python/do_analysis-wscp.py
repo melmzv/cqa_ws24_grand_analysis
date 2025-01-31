@@ -21,14 +21,23 @@ def main():
     # Compute summary statistics
     df_summary = compute_summary_statistics(bhr_annual_results, bhr_event_results)
 
+    # Save summary statistics
+    summary_statistics_csv = cfg["summary_statistics_csv"]
+    df_summary.to_csv(summary_statistics_csv, index=False)
+    log.info(f"Summary statistics saved to {summary_statistics_csv}")
+
     # Run annual regressions
     df_regression = run_regressions(bhr_annual_results, bhr_event_results)
 
-    # Save regression results
-    regression_output_csv = cfg["regression_output_csv"]
-    df_regression.to_csv(regression_output_csv, index=False)
+    # Save regression results (CSV)
+    regression_results_csv = cfg["regression_results_csv"]
+    df_regression.to_csv(regression_results_csv, index=False)
+    log.info(f"Regression results saved to {regression_results_csv}")
 
-    log.info(f"Regression results saved to {regression_output_csv}")
+    '''    # Save regression plot
+    regression_plot_path = cfg["regression_results_plot"]
+    plt.savefig(regression_plot_path) 
+    log.info(f"Regression plot saved to {regression_plot_path}")'''
 
     log.info("Analysis complete.")
 
@@ -84,13 +93,22 @@ def run_regressions(bhr_annual, bhr_event):
     """
 
     log.info("Running annual regressions (Table 2 format)...")
-    regression_results = []
 
-    # Ensure data is merged correctly
+    # **Ensure `year_stock` column exists in BHR Event dataset**
+    if "year_stock" not in bhr_event.columns:
+        bhr_event["year_stock"] = pd.to_datetime(bhr_event["rdq"]).dt.year
+        log.info("Added `year_stock` column to BHR Event dataset.")
+
+    # Print column names for debugging
+    log.info(f"BHR Annual Columns: {bhr_annual.columns.tolist()}")
+    log.info(f"BHR Event Columns: {bhr_event.columns.tolist()}")
+
+    # Merge datasets correctly
     merged_data = bhr_annual.merge(bhr_event, on=["infocode", "year_stock"], how="inner")
     log.info(f"Merged dataset for regression. Total observations: {len(merged_data)}")
 
     # Run regressions for each year
+    regression_results = []
     for year in sorted(merged_data["year_stock"].unique()):
         yearly_data = merged_data[merged_data["year_stock"] == year]
 
@@ -104,7 +122,7 @@ def run_regressions(bhr_annual, bhr_event):
             continue
 
         # Pivot data to have Q1, Q2, Q3, Q4 as separate columns
-        yearly_pivot = yearly_data.pivot(index=["infocode", "year_stock"], columns="quarter", values="BHR_3day").reset_index()
+        yearly_pivot = yearly_data.pivot_table(index=["infocode", "year_stock"], columns="quarter", values="BHR_3day").reset_index()
         yearly_pivot = yearly_pivot.rename(columns={"Q1": "BHR_Q1", "Q2": "BHR_Q2", "Q3": "BHR_Q3", "Q4": "BHR_Q4"})
 
         # Merge back with annual returns
@@ -122,10 +140,10 @@ def run_regressions(bhr_annual, bhr_event):
         regression_results.append({
             "Year": year,
             "Intercept": model.params["const"],
-            "Q1": model.params["BHR_Q1"],
-            "Q2": model.params["BHR_Q2"],
-            "Q3": model.params["BHR_Q3"],
-            "Q4": model.params["BHR_Q4"],
+            "Q1": model.params.get("BHR_Q1", np.nan),
+            "Q2": model.params.get("BHR_Q2", np.nan),
+            "Q3": model.params.get("BHR_Q3", np.nan),
+            "Q4": model.params.get("BHR_Q4", np.nan),
             "Adj_R²": model.rsquared_adj,
             "No. Obs.": len(final_data)
         })

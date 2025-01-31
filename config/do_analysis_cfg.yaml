@@ -13,5 +13,8 @@ bhr_annual_output_csv: "data/generated/bhr_annual_results.csv"
 bhr_annual_output_parquet: "data/generated/bhr_annual_results.parquet"
 
 # --- Output: Summary Statistics ---
-summary_statistics_csv: "data/generated/summary_statistics.csv"
-summary_statistics_plot: "data/generated/summary_statistics_plot.png"
+summary_statistics_csv: "output/summary_statistics.csv"
+
+# --- Output: Regression Results ---
+regression_results_csv: "output/regression_results.csv" #for pickle
+regression_results_plot: "output/regression_plot.png" # plt show
