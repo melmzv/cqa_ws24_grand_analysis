@@ -1,4 +1,17 @@
+# old
 prepared_data_save_path: 'data/generated/prepared_transparency_data.csv'
 aggregated_data_save_path: 'output/aggregated_market_shares.csv'
 figure_save_path: 'output/figure3_market_shares.png'
 pickle_save_path: 'output/figure3_market_shares.pickle'
+
+# Task 3 WS/Datastream
+# --- Input: BHR Computation ---
+bhr_event_output_csv: "data/generated/bhr_event_results.csv"
+bhr_event_output_parquet: "data/generated/bhr_event_results.parquet"
+
+bhr_annual_output_csv: "data/generated/bhr_annual_results.csv"
+bhr_annual_output_parquet: "data/generated/bhr_annual_results.parquet"
+
+# --- Output: Summary Statistics ---
+summary_statistics_csv: "data/generated/summary_statistics.csv"
+summary_statistics_plot: "data/generated/summary_statistics_plot.png"
