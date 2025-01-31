@@ -24,7 +24,7 @@ fundq_save_path_csv: 'data/pulled/compustat_fundq_1972_2023.csv'
 
 
 ## Task 3
-## Basically, adapt the variables from CRSP/Compustat above to WSCP/Datastream, since same methodology.
+# Basically, adapt the variables from CRSP/Compustat above to WSCP/Datastream, since same methodology.
 # Worldscope - Stock Data (Quarterly Update)
 wrds_ws_stock_vars:
   - code # The QA primary mapping code across all Worldscope tables
