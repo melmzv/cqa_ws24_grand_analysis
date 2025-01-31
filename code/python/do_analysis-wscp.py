@@ -34,11 +34,10 @@ def main():
     df_regression.to_csv(regression_results_csv, index=False)
     log.info(f"Regression results saved to {regression_results_csv}")
 
-    '''    # Save regression plot
-    regression_plot_path = cfg["regression_results_plot"]
-    plt.savefig(regression_plot_path) 
-    log.info(f"Regression plot saved to {regression_plot_path}")'''
+    # Generate Figure 1 replication
+    plot_figure1(df_regression, cfg["figure1_save_path"], cfg['figure1_pickle_path'])
 
+    
     log.info("Analysis complete.")
 
 def compute_summary_statistics(bhr_annual_results, bhr_event_results):
@@ -175,6 +174,46 @@ def run_regressions(bhr_annual, bhr_event):
 
     return results_df
 
+def plot_figure1(results_df, save_path, pickle_path):
+    """
+    Replicates Figure 1 from Ball (2008), including:
+    - Panel A: Abnormal Adjusted R² over time
+    - Panel B: Slope Coefficients for Q1, Q2, Q3, Q4 over time
+    """
+
+    log.info("Generating Figure 1 replication...")
+
+    # **Panel A: Abnormal Adjusted R²**
+    plt.figure(figsize=(10, 8))
+
+    plt.subplot(2, 1, 1)  # 2 rows, 1 column, 1st subplot
+    abnormal_r2 = results_df["Abnormal R²"] * 100  # Convert to percentage
+    plt.plot(results_df["Year"], abnormal_r2, marker="o", linestyle="-", color="black")
+    plt.axhline(y=0, color="gray", linestyle="--")
+    plt.xlabel("Year")
+    plt.ylabel("Abnormal Adj. R² (%)")
+    plt.title("Panel A: Abnormal Adjusted R² Over Time")
+    plt.grid(True)
+
+    # **Panel B: Slope Coefficients**
+    plt.subplot(2, 1, 2)  # 2 rows, 1 column, 2nd subplot
+    plt.plot(results_df["Year"], results_df["Q1"], label="Quarter 1", linestyle="dashed", color="black")
+    plt.plot(results_df["Year"], results_df["Q2"], label="Quarter 2", linestyle="solid", color="gray")
+    plt.plot(results_df["Year"], results_df["Q3"], label="Quarter 3", linestyle="dotted", color="black")
+    plt.plot(results_df["Year"], results_df["Q4"], label="Quarter 4", linestyle="dashdot", color="gray")
+
+    plt.xlabel("Year")
+    plt.ylabel("Slope Coefficients")
+    plt.title("Panel B: Slope Coefficients by Quarter")
+    plt.legend()
+    plt.grid(True)
+
+    # Save Figure
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.show()
+
+    log.info(f"Figure 1 replication saved to {save_path}")
 
 
 if __name__ == "__main__":
