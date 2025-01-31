@@ -11,7 +11,7 @@ log = setup_logging()
 
 def main():
     log.info("Starting analysis ...")
-    cfg = read_config('config/prepare_data_cfg.yaml')
+    cfg = read_config('config/do_analysis_cfg.yaml')
 
     # Load datasets
     log.info("Loading computed BHR Event and BHR Annual datasets...")
@@ -112,26 +112,34 @@ def run_regressions(bhr_annual, bhr_event):
     for year in sorted(merged_data["year_stock"].unique()):
         yearly_data = merged_data[merged_data["year_stock"] == year]
 
-        # Ensure each firm has all four quarters
-        firm_counts = yearly_data.groupby("infocode")["quarter"].nunique()
-        valid_firms = firm_counts[firm_counts == 4].index
-        yearly_data = yearly_data[yearly_data["infocode"].isin(valid_firms)]
-
-        if len(yearly_data) < 10:  # Skip years with too few firms
-            log.warning(f"Skipping year {year} due to insufficient data ({len(yearly_data)} firms).")
-            continue
-
         # Pivot data to have Q1, Q2, Q3, Q4 as separate columns
-        yearly_pivot = yearly_data.pivot_table(index=["infocode", "year_stock"], columns="quarter", values="BHR_3day").reset_index()
-        yearly_pivot = yearly_pivot.rename(columns={"Q1": "BHR_Q1", "Q2": "BHR_Q2", "Q3": "BHR_Q3", "Q4": "BHR_Q4"})
+        yearly_pivot = yearly_data.pivot_table(
+            index=["infocode", "year_stock"], 
+            columns="quarter", 
+            values="BHR_3day"
+        ).reset_index()
+
+        # Rename columns for clarity
+        yearly_pivot = yearly_pivot.rename(
+            columns={"Q1": "BHR_Q1", "Q2": "BHR_Q2", "Q3": "BHR_Q3", "Q4": "BHR_Q4"}
+        )
 
         # Merge back with annual returns
         final_data = yearly_pivot.merge(bhr_annual, on=["infocode", "year_stock"], how="inner")
 
         # Define Dependent and Independent Variables
-        X = final_data[["BHR_Q1", "BHR_Q2", "BHR_Q3", "BHR_Q4"]]
+        independent_vars = ["BHR_Q1", "BHR_Q2", "BHR_Q3", "BHR_Q4"]
+        X = final_data[independent_vars]
         y = final_data["BHR_Annual"]
+
+        # **Handle missing quarters by filling NaN with 0** (otherwise regression may fail)
+        X = X.fillna(0)
         X = sm.add_constant(X)  # Add intercept
+
+        # Skip regression if no valid data is left
+        if X.shape[0] < 2:  
+            log.warning(f"Skipping year {year} due to insufficient data ({X.shape[0]} observations).")
+            continue
 
         # Fit Regression Model
         model = sm.OLS(y, X).fit()
