@@ -2,7 +2,8 @@
 import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt#
+import statsmodels.api as sm
 from utils import read_config, setup_logging
 
 # Set up logging
@@ -20,14 +21,22 @@ def main():
     # Compute summary statistics
     df_summary = compute_summary_statistics(bhr_annual_results, bhr_event_results)
 
+    # Run annual regressions
+    df_regression = run_regressions(bhr_annual_results, bhr_event_results)
 
+    # Save regression results
+    regression_output_csv = cfg["regression_output_csv"]
+    df_regression.to_csv(regression_output_csv, index=False)
+
+    log.info(f"Regression results saved to {regression_output_csv}")
 
     log.info("Analysis complete.")
 
 def compute_summary_statistics(bhr_annual_results, bhr_event_results):
     """
     Computes summary statistics (Mean, Median, Skewness, % Obs = 0, % Obs > 0) 
-    for annual and earnings-announcement window returns.
+    for annual returns and earnings-announcement window returns like in Table 1 by Ball(2008)
+    to compare preliminary results.
     """
     log.info("Computing summary statistics for comparison with Table 1...")
 
@@ -67,26 +76,65 @@ def compute_summary_statistics(bhr_annual_results, bhr_event_results):
 
     return df_summary
 
-def plot_summary_statistics(df_summary):
+def run_regressions(bhr_annual, bhr_event):
     """
-    Plots a bar chart comparing our computed summary statistics with Ball (2008) Table 1.
+    Performs annual cross-sectional regressions of calendar-year returns on 
+    the four earnings-announcement window returns in the calendar year.
+    Replicates Table 2 in Ball (2008).
     """
-    log.info("Plotting summary statistics for comparison with Ball’s Table 1...")
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    df_summary.set_index("Category")[["Mean", "Median", "Skewness"]].plot(kind="bar", ax=ax)
-    
-    plt.title("Comparison of Summary Statistics (Our Results vs. Ball Table 1)")
-    plt.ylabel("Value")
-    plt.xticks(rotation=45, ha="right")
-    plt.tight_layout()
+    log.info("Running annual regressions (Table 2 format)...")
+    regression_results = []
 
-    # Save figure
-    plot_path = "data/generated/summary_statistics_plot.png"
-    plt.savefig(plot_path)
-    log.info(f"Summary statistics plot saved to {plot_path}")
+    # Ensure data is merged correctly
+    merged_data = bhr_annual.merge(bhr_event, on=["infocode", "year_stock"], how="inner")
+    log.info(f"Merged dataset for regression. Total observations: {len(merged_data)}")
 
-    plt.show()
+    # Run regressions for each year
+    for year in sorted(merged_data["year_stock"].unique()):
+        yearly_data = merged_data[merged_data["year_stock"] == year]
+
+        # Ensure each firm has all four quarters
+        firm_counts = yearly_data.groupby("infocode")["quarter"].nunique()
+        valid_firms = firm_counts[firm_counts == 4].index
+        yearly_data = yearly_data[yearly_data["infocode"].isin(valid_firms)]
+
+        if len(yearly_data) < 10:  # Skip years with too few firms
+            log.warning(f"Skipping year {year} due to insufficient data ({len(yearly_data)} firms).")
+            continue
+
+        # Pivot data to have Q1, Q2, Q3, Q4 as separate columns
+        yearly_pivot = yearly_data.pivot(index=["infocode", "year_stock"], columns="quarter", values="BHR_3day").reset_index()
+        yearly_pivot = yearly_pivot.rename(columns={"Q1": "BHR_Q1", "Q2": "BHR_Q2", "Q3": "BHR_Q3", "Q4": "BHR_Q4"})
+
+        # Merge back with annual returns
+        final_data = yearly_pivot.merge(bhr_annual, on=["infocode", "year_stock"], how="inner")
+
+        # Define Dependent and Independent Variables
+        X = final_data[["BHR_Q1", "BHR_Q2", "BHR_Q3", "BHR_Q4"]]
+        y = final_data["BHR_Annual"]
+        X = sm.add_constant(X)  # Add intercept
+
+        # Fit Regression Model
+        model = sm.OLS(y, X).fit()
+
+        # Store results
+        regression_results.append({
+            "Year": year,
+            "Intercept": model.params["const"],
+            "Q1": model.params["BHR_Q1"],
+            "Q2": model.params["BHR_Q2"],
+            "Q3": model.params["BHR_Q3"],
+            "Q4": model.params["BHR_Q4"],
+            "Adj_R²": model.rsquared_adj,
+            "No. Obs.": len(final_data)
+        })
+
+    # Convert to DataFrame
+    df_regression = pd.DataFrame(regression_results)
+    log.info("Completed annual regressions.")
+
+    return df_regression
 
 if __name__ == "__main__":
     main()
