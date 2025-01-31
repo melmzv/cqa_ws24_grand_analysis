@@ -1,10 +1,10 @@
-### Task 1&2
+## Task 1&2
 # CRSP Daily Stock Data (Annual update)
 crsp_vars:
   - permno # Unique Identifier to match
   - date
   - ret  # Daily return from CRSP, price (`PCR`) not used for simplicity
-crsp_filter: # As in Ball (2008)
+crsp_filter:
   - "date >= '1972-01-01'"
   - "date <= '2023-12-31'"
 crsp_save_path: 'data/pulled/crsp_daily_stock_returns.parquet'
@@ -17,15 +17,13 @@ fundq_vars:
   - conm  # Company name
   - tic  # Ticker symbol
   - rdq  # Reported Date for Earnings Announcements - for Earnings Announcement Definition
-  - fyearq  # Fiscal Year of the Quarter 
-  - fqtr  # Fiscal Quarter
   - fyr  # Fiscal Year-End Indicator
 fundq_filter: 
 fundq_save_path: 'data/pulled/compustat_fundq_1972_2023.parquet'
 fundq_save_path_csv: 'data/pulled/compustat_fundq_1972_2023.csv'
 
 
-### Task 3
+## Task 3
 ## Basically, adapt the variables from CRSP/Compustat above to WSCP/Datastream, since same methodology.
 # Worldscope - Stock Data (Quarterly Update)
 wrds_ws_stock_vars:
