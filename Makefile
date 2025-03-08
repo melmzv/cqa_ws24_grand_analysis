@@ -1,7 +1,7 @@
 # --- Header -------------------------------------------------------------------
 # Automates pulling data, preparing datasets, running analysis, and rendering the paper
 # If you are new to Makefiles: https://makefiletutorial.com
-# (C) Melisa Mazaeva - See LICENSE file for details
+# (C) Mel Mzv - See LICENSE file for details
 # ------------------------------------------------------------------------------
 
 PAPER := output/paper.pdf

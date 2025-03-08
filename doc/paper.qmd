@@ -4,8 +4,8 @@ title: |
   | Corporate Decision-Making and Quantitative Analysis
   | Winter 2024/25 - Individual Report\vspace{1cm}
 author:
-  - name: Melisa Mazaeva
-    email: melisa.mazaeva@student.hu-berlin.de
+  - name: Mel Mzv
+    email: m@student.hu-berlin.de
     affiliations:
       - Humboldt-Universität zu Berlin  
 date: today
